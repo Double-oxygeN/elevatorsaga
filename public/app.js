@@ -39111,1239 +39111,1224 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/**
 
 /***/ }),
 
-/***/ "./src/js/base.js":
+/***/ "./src/ts/base.ts":
 /*!************************!*\
-  !*** ./src/js/base.js ***!
+  !*** ./src/ts/base.ts ***!
   \************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "newGuard": () => (/* binding */ newGuard),
-/* harmony export */   "distanceNeededToAchieveSpeed": () => (/* binding */ distanceNeededToAchieveSpeed),
-/* harmony export */   "createBoolPassthroughFunction": () => (/* binding */ createBoolPassthroughFunction),
-/* harmony export */   "limitNumber": () => (/* binding */ limitNumber),
-/* harmony export */   "getCodeObjFromCode": () => (/* binding */ getCodeObjFromCode),
-/* harmony export */   "epsilonEquals": () => (/* binding */ epsilonEquals),
-/* harmony export */   "accelerationNeededToAchieveChangeDistance": () => (/* binding */ accelerationNeededToAchieveChangeDistance)
-/* harmony export */ });
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getCodeObjFromCode = exports.accelerationNeededToAchieveChangeDistance = exports.distanceNeededToAchieveSpeed = exports.createBoolPassthroughFunction = exports.deprecationWarning = exports.epsilonEquals = exports.limitNumber = void 0;
 // Console shim
 (function () {
-    var f = function () {};
+    var f = function () { };
     if (!console) {
+        // @ts-ignore
         console = {
-            log:f, info:f, warn:f, debug:f, error:f
+            log: f, info: f, warn: f, debug: f, error: f
         };
     }
-}());
-
-var limitNumber = function(num, min, max) {
+})();
+var limitNumber = function (num, min, max) {
     return Math.min(max, Math.max(num, min));
 };
-
-var epsilonEquals = function(a, b) {
-    return Math.abs(a-b) < 0.00000001;
+exports.limitNumber = limitNumber;
+var epsilonEquals = function (a, b) {
+    return Math.abs(a - b) < 0.00000001;
 };
-
+exports.epsilonEquals = epsilonEquals;
 // Polyfill from MDN
-var sign = function(x) {
-    x = +x; // convert to a number
-    if (x === 0 || isNaN(x)){
+var sign = function (x) {
+    if (x === 0 || isNaN(x)) {
         return x;
     }
     return x > 0 ? 1 : -1;
 };
-if(typeof Math.sign === "undefined") {
+if (typeof Math.sign === "undefined") {
     Math.sign = sign;
 }
-
-var deprecationWarning = function(name) {
+var deprecationWarning = function (name) {
     console.warn("You are using a deprecated feature scheduled for removal: " + name);
 };
-
-var newGuard = function(obj, type) {
-    if(!(obj instanceof type)) { throw "Incorrect instantiation, got " + typeof obj + " but expected " + type; }
-}
-
-var createBoolPassthroughFunction = function(owner, obj, objPropertyName) {
-    return function(val) {
-        if(typeof val !== "undefined") {
+exports.deprecationWarning = deprecationWarning;
+var createBoolPassthroughFunction = function (owner, obj, objPropertyName) {
+    return function (val) {
+        if (typeof val !== "undefined") {
             obj[objPropertyName] = val ? true : false;
             obj.trigger("change:" + objPropertyName, obj[objPropertyName]);
             return owner;
-        } else {
+        }
+        else {
             return obj[objPropertyName];
         }
     };
 };
-
-var distanceNeededToAchieveSpeed = function(currentSpeed, targetSpeed, acceleration) {
+exports.createBoolPassthroughFunction = createBoolPassthroughFunction;
+var distanceNeededToAchieveSpeed = function (currentSpeed, targetSpeed, acceleration) {
     // v² = u² + 2a * d
     var requiredDistance = (Math.pow(targetSpeed, 2) - Math.pow(currentSpeed, 2)) / (2 * acceleration);
     return requiredDistance;
 };
-var accelerationNeededToAchieveChangeDistance = function(currentSpeed, targetSpeed, distance) {
+exports.distanceNeededToAchieveSpeed = distanceNeededToAchieveSpeed;
+var accelerationNeededToAchieveChangeDistance = function (currentSpeed, targetSpeed, distance) {
     // v² = u² + 2a * d
     var requiredAcceleration = 0.5 * ((Math.pow(targetSpeed, 2) - Math.pow(currentSpeed, 2)) / distance);
     return requiredAcceleration;
 };
-
+exports.accelerationNeededToAchieveChangeDistance = accelerationNeededToAchieveChangeDistance;
 // Fake frame requester helper used for testing and fitness simulations
-var createFrameRequester = function(timeStep) {
-    var currentCb = null;
-    var requester = {};
-    requester.currentT = 0.0;
-    requester.register = function(cb) { currentCb = cb; };
-    requester.trigger = function() { requester.currentT += timeStep; if(currentCb !== null) { currentCb(requester.currentT); } };
+var createFrameRequester = function (timeStep) {
+    var currentCb = function (t) { };
+    var requester = {
+        currentT: 0.0,
+        register: function (cb) { currentCb = cb; },
+        trigger: function () { this.currentT += timeStep; currentCb(this.currentT); }
+    };
     return requester;
 };
-
-var getCodeObjFromCode = function(code) {
-    if (code.trim().substr(0,1) == "{" && code.trim().substr(-1,1) == "}") {
+var getCodeObjFromCode = function (code) {
+    if (code.trim().substr(0, 1) === "{" && code.trim().substr(-1, 1) === "}") {
         code = "(" + code + ")";
     }
     /* jslint evil:true */
     var obj = eval(code);
     /* jshint evil:false */
-    if(typeof obj.init !== "function") {
+    if (typeof obj.init !== "function") {
         throw "Code must contain an init function";
     }
-    if(typeof obj.update !== "function") {
+    if (typeof obj.update !== "function") {
         throw "Code must contain an update function";
     }
     return obj;
-}
-
-
+};
+exports.getCodeObjFromCode = getCodeObjFromCode;
 
 
 /***/ }),
 
-/***/ "./src/js/challenges.js":
+/***/ "./src/ts/challenges.ts":
 /*!******************************!*\
-  !*** ./src/js/challenges.js ***!
+  !*** ./src/ts/challenges.ts ***!
   \******************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "challenges": () => (/* binding */ challenges)
-/* harmony export */ });
 
-var requireUserCountWithinTime = function(userCount, timeLimit) {
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.challenges = void 0;
+var requireUserCountWithinTime = function (userCount, timeLimit) {
     return {
         description: "<span class='emphasis-color'>" + userCount + "</span> 人を <span class='emphasis-color'>" + timeLimit.toFixed(0) + "</span> 秒以内に運んでください。",
-        evaluate: function(world) {
-            if(world.elapsedTime >= timeLimit || world.transportedCounter >= userCount) {
+        evaluate: function (world) {
+            if (world.elapsedTime >= timeLimit || world.transportedCounter >= userCount) {
                 return world.elapsedTime <= timeLimit && world.transportedCounter >= userCount;
-            } else {
+            }
+            else {
                 return null;
             }
         }
     };
 };
-
-var requireUserCountWithMaxWaitTime = function(userCount, maxWaitTime) {
+var requireUserCountWithMaxWaitTime = function (userCount, maxWaitTime) {
     return {
         description: "<span class='emphasis-color'>" + maxWaitTime.toFixed(1) + "</span> 秒以上待たせることなく <span class='emphasis-color'>" + userCount + "</span> 人を運んでください。",
-        evaluate: function(world) {
-            if(world.maxWaitTime >= maxWaitTime || world.transportedCounter >= userCount) {
+        evaluate: function (world) {
+            if (world.maxWaitTime >= maxWaitTime || world.transportedCounter >= userCount) {
                 return world.maxWaitTime <= maxWaitTime && world.transportedCounter >= userCount;
-            } else {
+            }
+            else {
                 return null;
             }
         }
     };
 };
-
-var requireUserCountWithinTimeWithMaxWaitTime = function(userCount, timeLimit, maxWaitTime) {
+var requireUserCountWithinTimeWithMaxWaitTime = function (userCount, timeLimit, maxWaitTime) {
     return {
         description: "<span class='emphasis-color'>" + maxWaitTime.toFixed(1) + "</span> 秒以上待たせることなく <span class='emphasis-color'>" + userCount + "</span> 人を <span class='emphasis-color'>" + timeLimit.toFixed(0) + "</span> 秒以内に運んでください。",
-        evaluate: function(world) {
-            if(world.elapsedTime >= timeLimit || world.maxWaitTime >= maxWaitTime || world.transportedCounter >= userCount) {
+        evaluate: function (world) {
+            if (world.elapsedTime >= timeLimit || world.maxWaitTime >= maxWaitTime || world.transportedCounter >= userCount) {
                 return world.elapsedTime <= timeLimit && world.maxWaitTime <= maxWaitTime && world.transportedCounter >= userCount;
-            } else {
+            }
+            else {
                 return null;
             }
         }
     };
 };
-
-var requireUserCountWithinMoves = function(userCount, moveLimit) {
+var requireUserCountWithinMoves = function (userCount, moveLimit) {
     return {
         description: "<span class='emphasis-color'>" + moveLimit + "</span> 回以内の移動で <span class='emphasis-color'>" + userCount + "</span> 人を運んでください。",
-        evaluate: function(world) {
-            if(world.moveCount >= moveLimit || world.transportedCounter >= userCount) {
+        evaluate: function (world) {
+            if (world.moveCount >= moveLimit || world.transportedCounter >= userCount) {
                 return world.moveCount <= moveLimit && world.transportedCounter >= userCount;
-            } else {
+            }
+            else {
                 return null;
             }
         }
     };
 };
-
-var requireDemo = function() {
+var requireDemo = function () {
     return {
         description: "エンドレス",
-        evaluate: function() { return null; }
+        evaluate: function (world) { return null; }
     };
 };
-
 /* jshint laxcomma:true */
-var challenges = [
-     {options: {floorCount: 3, elevatorCount: 1, spawnRate: 0.3}, condition: requireUserCountWithinTime(15, 60)}
-    ,{options: {floorCount: 5, elevatorCount: 1, spawnRate: 0.4}, condition: requireUserCountWithinTime(20, 60)}
-    ,{options: {floorCount: 5, elevatorCount: 1, spawnRate: 0.5, elevatorCapacities: [6]}, condition: requireUserCountWithinTime(23, 60)}
-    ,{options: {floorCount: 8, elevatorCount: 2, spawnRate: 0.6}, condition: requireUserCountWithinTime(28, 60)}
-    ,{options: {floorCount: 6, elevatorCount: 4, spawnRate: 1.7}, condition: requireUserCountWithinTime(100, 68)}
-    ,{options: {floorCount: 4, elevatorCount: 2, spawnRate: 0.8}, condition: requireUserCountWithinMoves(40, 60)}
-    ,{options: {floorCount: 3, elevatorCount: 3, spawnRate: 3.0}, condition: requireUserCountWithinMoves(100, 63)}
-    ,{options: {floorCount: 6, elevatorCount: 2, spawnRate: 0.4, elevatorCapacities: [5]}, condition: requireUserCountWithMaxWaitTime(50, 21)}
-    ,{options: {floorCount: 7, elevatorCount: 3, spawnRate: 0.6}, condition: requireUserCountWithMaxWaitTime(50, 20)}
-
-    ,{options: {floorCount: 13, elevatorCount: 2, spawnRate: 1.1, elevatorCapacities: [4,10]}, condition: requireUserCountWithinTime(50, 70)}
-
-    ,{options: {floorCount: 9, elevatorCount: 5, spawnRate: 1.1}, condition: requireUserCountWithMaxWaitTime(60, 19)}
-    ,{options: {floorCount: 9, elevatorCount: 5, spawnRate: 1.1}, condition: requireUserCountWithMaxWaitTime(80, 17)}
-    ,{options: {floorCount: 9, elevatorCount: 5, spawnRate: 1.1, elevatorCapacities: [5]}, condition: requireUserCountWithMaxWaitTime(100, 15)}
-    ,{options: {floorCount: 9, elevatorCount: 5, spawnRate: 1.0, elevatorCapacities: [6]}, condition: requireUserCountWithMaxWaitTime(110, 15)}
-    ,{options: {floorCount: 8, elevatorCount: 6, spawnRate: 0.9}, condition: requireUserCountWithMaxWaitTime(120, 14)}
-
-    ,{options: {floorCount: 12, elevatorCount: 4, spawnRate: 1.4, elevatorCapacities: [5,10]}, condition: requireUserCountWithinTime(70, 80)}
-    ,{options: {floorCount: 21, elevatorCount: 5, spawnRate: 1.9, elevatorCapacities: [10]}, condition: requireUserCountWithinTime(110, 80)}
-
-    ,{options: {floorCount: 21, elevatorCount: 8, spawnRate: 1.5, elevatorCapacities: [6,8]}, condition: requireUserCountWithinTimeWithMaxWaitTime(2675, 1800, 45)}
-
-    ,{options: {floorCount: 21, elevatorCount: 8, spawnRate: 1.5, elevatorCapacities: [6,8]}, condition: requireDemo()}
+exports.challenges = [
+    { options: { floorCount: 3, elevatorCount: 1, spawnRate: 0.3 }, condition: requireUserCountWithinTime(15, 60) },
+    { options: { floorCount: 5, elevatorCount: 1, spawnRate: 0.4 }, condition: requireUserCountWithinTime(20, 60) },
+    { options: { floorCount: 5, elevatorCount: 1, spawnRate: 0.5, elevatorCapacities: [6] }, condition: requireUserCountWithinTime(23, 60) },
+    { options: { floorCount: 8, elevatorCount: 2, spawnRate: 0.6 }, condition: requireUserCountWithinTime(28, 60) },
+    { options: { floorCount: 6, elevatorCount: 4, spawnRate: 1.7 }, condition: requireUserCountWithinTime(100, 68) },
+    { options: { floorCount: 4, elevatorCount: 2, spawnRate: 0.8 }, condition: requireUserCountWithinMoves(40, 60) },
+    { options: { floorCount: 3, elevatorCount: 3, spawnRate: 3.0 }, condition: requireUserCountWithinMoves(100, 63) },
+    { options: { floorCount: 6, elevatorCount: 2, spawnRate: 0.4, elevatorCapacities: [5] }, condition: requireUserCountWithMaxWaitTime(50, 21) },
+    { options: { floorCount: 7, elevatorCount: 3, spawnRate: 0.6 }, condition: requireUserCountWithMaxWaitTime(50, 20) },
+    { options: { floorCount: 13, elevatorCount: 2, spawnRate: 1.1, elevatorCapacities: [4, 10] }, condition: requireUserCountWithinTime(50, 70) },
+    { options: { floorCount: 9, elevatorCount: 5, spawnRate: 1.1 }, condition: requireUserCountWithMaxWaitTime(60, 19) },
+    { options: { floorCount: 9, elevatorCount: 5, spawnRate: 1.1 }, condition: requireUserCountWithMaxWaitTime(80, 17) },
+    { options: { floorCount: 9, elevatorCount: 5, spawnRate: 1.1, elevatorCapacities: [5] }, condition: requireUserCountWithMaxWaitTime(100, 15) },
+    { options: { floorCount: 9, elevatorCount: 5, spawnRate: 1.0, elevatorCapacities: [6] }, condition: requireUserCountWithMaxWaitTime(110, 15) },
+    { options: { floorCount: 8, elevatorCount: 6, spawnRate: 0.9 }, condition: requireUserCountWithMaxWaitTime(120, 14) },
+    { options: { floorCount: 12, elevatorCount: 4, spawnRate: 1.4, elevatorCapacities: [5, 10] }, condition: requireUserCountWithinTime(70, 80) },
+    { options: { floorCount: 21, elevatorCount: 5, spawnRate: 1.9, elevatorCapacities: [10] }, condition: requireUserCountWithinTime(110, 80) },
+    { options: { floorCount: 21, elevatorCount: 8, spawnRate: 1.5, elevatorCapacities: [6, 8] }, condition: requireUserCountWithinTimeWithMaxWaitTime(2675, 1800, 45) },
+    { options: { floorCount: 21, elevatorCount: 8, spawnRate: 1.5, elevatorCapacities: [6, 8] }, condition: requireDemo() }
 ];
 /* jshint laxcomma:false */
 
 
-
-
 /***/ }),
 
-/***/ "./src/js/elevator.js":
+/***/ "./src/ts/elevator.ts":
 /*!****************************!*\
-  !*** ./src/js/elevator.js ***!
+  !*** ./src/ts/elevator.ts ***!
   \****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ Elevator)
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/js/base.js");
-/* harmony import */ var _movable__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./movable */ "./src/js/movable.js");
 
-
-
-function newElevStateHandler(elevator) { elevator.handleNewState(); }
-
-function Elevator(speedFloorsPerSec, floorCount, floorHeight, maxUsers) {
-    (0,_base__WEBPACK_IMPORTED_MODULE_0__.newGuard)(this, Elevator);
-    _movable__WEBPACK_IMPORTED_MODULE_1__["default"].call(this);
-    var elevator = this;
-
-    elevator.ACCELERATION = floorHeight * 2.1;
-    elevator.DECELERATION = floorHeight * 2.6;
-    elevator.MAXSPEED = floorHeight * speedFloorsPerSec;
-    elevator.floorCount = floorCount;
-    elevator.floorHeight = floorHeight;
-    elevator.maxUsers = maxUsers || 4;
-    elevator.destinationY = 0.0;
-    elevator.velocityY = 0.0;
-    // isMoving flag is needed when going to same floor again - need to re-raise events
-    elevator.isMoving = false;
-
-    elevator.goingDownIndicator = true;
-    elevator.goingUpIndicator = true;
-
-    elevator.currentFloor = 0;
-    elevator.previousTruncFutureFloorIfStopped = 0;
-    elevator.buttonStates = _.map(_.range(floorCount), function(e, i){ return false; });
-    elevator.moveCount = 0;
-    elevator.removed = false;
-    elevator.userSlots = _.map(_.range(elevator.maxUsers), function(user, i) {
-        return { pos: [2 + (i * 10), 30], user: null};
-    });
-    elevator.width = elevator.maxUsers * 10;
-    elevator.destinationY = elevator.getYPosOfFloor(elevator.currentFloor);
-
-    elevator.on("new_state", newElevStateHandler);
-
-    elevator.on("change:goingUpIndicator", function(value){
-        elevator.trigger("indicatorstate_change", {up: elevator.goingUpIndicator, down: elevator.goingDownIndicator});
-    });
-
-    elevator.on("change:goingDownIndicator", function(value){
-        elevator.trigger("indicatorstate_change", {up: elevator.goingUpIndicator, down: elevator.goingDownIndicator});
-    });
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var _ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+var base_1 = __webpack_require__(/*! ./base */ "./src/ts/base.ts");
+var movable_1 = __webpack_require__(/*! ./movable */ "./src/ts/movable.ts");
+var newElevStateHandler = function (elevator) {
+    elevator.handleNewState();
 };
-Elevator.prototype = Object.create(_movable__WEBPACK_IMPORTED_MODULE_1__["default"].prototype);
-
-Elevator.prototype.setFloorPosition = function(floor) {
-    var destination = this.getYPosOfFloor(floor);
-    this.currentFloor = floor;
-    this.previousTruncFutureFloorIfStopped = floor;
-    this.moveTo(null, destination);
-};
-
-Elevator.prototype.userEntering = function(user) {
-    var randomOffset = _.random(this.userSlots.length - 1);
-    for(var i=0; i<this.userSlots.length; i++) {
-        var slot = this.userSlots[(i + randomOffset) % this.userSlots.length];
-        if(slot.user === null) {
-            slot.user = user;
-            return slot.pos;
+var Elevator = /** @class */ (function (_super) {
+    __extends(Elevator, _super);
+    function Elevator(speedFloorsPerSec, floorCount, floorHeight, maxUsers) {
+        var _this = _super.call(this) || this;
+        _this.acceleration = floorHeight * 2.1;
+        _this.deceleration = floorHeight * 2.6;
+        _this.maxspeed = floorHeight * speedFloorsPerSec;
+        _this.floorCount = floorCount;
+        _this.floorHeight = floorHeight;
+        _this.maxUsers = maxUsers || 4;
+        _this.destinationY = 0.0;
+        _this.velocityY = 0.0;
+        // isMoving flag is needed when going to same floor again - need to re-raise events
+        _this.isMoving = false;
+        _this.goingDownIndicator = true;
+        _this.goingUpIndicator = true;
+        _this.currentFloor = 0;
+        _this.previousTruncFutureFloorIfStopped = 0;
+        _this.buttonStates = _.map(_.range(floorCount), function (e, i) { return false; });
+        _this.moveCount = 0;
+        _this.removed = false;
+        _this.userSlots = _.map(_.range(_this.maxUsers), function (user, i) {
+            return { pos: [2 + (i * 10), 30], user: null };
+        });
+        _this.width = _this.maxUsers * 10;
+        _this.destinationY = _this.getYPosOfFloor(_this.currentFloor);
+        _this.on("new_state", newElevStateHandler);
+        _this.on("change:goingUpIndicator", function (value) {
+            _this.trigger("indicatorstate_change", { up: _this.goingUpIndicator, down: _this.goingDownIndicator });
+        });
+        _this.on("change:goingDownIndicator", function (value) {
+            _this.trigger("indicatorstate_change", { up: _this.goingUpIndicator, down: _this.goingDownIndicator });
+        });
+        return _this;
+    }
+    Elevator.prototype.setFloorPosition = function (floor) {
+        var destination = this.getYPosOfFloor(floor);
+        this.currentFloor = floor;
+        this.previousTruncFutureFloorIfStopped = floor;
+        this.moveTo(null, destination);
+    };
+    Elevator.prototype.userEntering = function (user) {
+        var randomOffset = _.random(this.userSlots.length - 1);
+        for (var i = 0; i < this.userSlots.length; i++) {
+            var slot = this.userSlots[(i + randomOffset) % this.userSlots.length];
+            if (slot.user === null) {
+                slot.user = user;
+                return slot.pos;
+            }
         }
-    }
-    return false;
-};
-
-Elevator.prototype.pressFloorButton = function(floorNumber) {
-    var prev;
-    floorNumber = (0,_base__WEBPACK_IMPORTED_MODULE_0__.limitNumber)(floorNumber, 0, this.floorCount - 1);
-    prev = this.buttonStates[floorNumber];
-    this.buttonStates[floorNumber] = true;
-    if(!prev) {
-        this.trigger("floor_button_pressed", floorNumber);
-        this.trigger("floor_buttons_changed", this.buttonStates, floorNumber);
-    }
-};
-
-Elevator.prototype.userExiting = function(user) {
-    for(var i=0; i<this.userSlots.length; i++) {
-        var slot = this.userSlots[i];
-        if(slot.user === user) {
-            slot.user = null;
+        return false;
+    };
+    Elevator.prototype.pressFloorButton = function (floorNumber) {
+        var prev;
+        floorNumber = (0, base_1.limitNumber)(floorNumber, 0, this.floorCount - 1);
+        prev = this.buttonStates[floorNumber];
+        this.buttonStates[floorNumber] = true;
+        if (!prev) {
+            this.trigger("floor_button_pressed", floorNumber);
+            this.trigger("floor_buttons_changed", this.buttonStates, floorNumber);
         }
-    }
-};
-
-Elevator.prototype.updateElevatorMovement = function(dt) {
-    if(this.isBusy()) {
-        // TODO: Consider if having a nonzero velocity here should throw error..
-        return;
-    }
-
-    // Make sure we're not speeding
-    this.velocityY = (0,_base__WEBPACK_IMPORTED_MODULE_0__.limitNumber)(this.velocityY, -this.MAXSPEED, this.MAXSPEED);
-
-    // Move elevator
-    this.moveTo(null, this.y + this.velocityY * dt);
-
-    var destinationDiff = this.destinationY - this.y;
-    var directionSign = Math.sign(destinationDiff);
-    var velocitySign = Math.sign(this.velocityY);
-    var acceleration = 0.0;
-    if(destinationDiff !== 0.0) {
-        if(directionSign === velocitySign) {
-            // Moving in correct direction
-            var distanceNeededToStop = (0,_base__WEBPACK_IMPORTED_MODULE_0__.distanceNeededToAchieveSpeed)(this.velocityY, 0.0, this.DECELERATION);
-            if(distanceNeededToStop * 1.05 < -Math.abs(destinationDiff)) {
-                // Slow down
-                // Allow a certain factor of extra breaking, to enable a smooth breaking movement after detecting overshoot
-                var requiredDeceleration = (0,_base__WEBPACK_IMPORTED_MODULE_0__.accelerationNeededToAchieveChangeDistance)(this.velocityY, 0.0, destinationDiff);
-                var deceleration = Math.min(this.DECELERATION*1.1, Math.abs(requiredDeceleration));
-                this.velocityY -= directionSign * deceleration * dt;
-            } else {
-                // Speed up (or keep max speed...)
-                acceleration = Math.min(Math.abs(destinationDiff*5), this.ACCELERATION);
+    };
+    Elevator.prototype.userExiting = function (user) {
+        for (var i = 0; i < this.userSlots.length; i++) {
+            var slot = this.userSlots[i];
+            if (slot.user === user) {
+                slot.user = null;
+            }
+        }
+    };
+    Elevator.prototype.updateElevatorMovement = function (dt) {
+        if (this.isBusy()) {
+            // TODO: Consider if having a nonzero velocity here should throw error..
+            return;
+        }
+        // Make sure we're not speeding
+        this.velocityY = (0, base_1.limitNumber)(this.velocityY, -this.maxspeed, this.maxspeed);
+        // Move elevator
+        this.moveTo(null, this.y + this.velocityY * dt);
+        var destinationDiff = this.destinationY - this.y;
+        var directionSign = Math.sign(destinationDiff);
+        var velocitySign = Math.sign(this.velocityY);
+        var acceleration = 0.0;
+        if (destinationDiff !== 0.0) {
+            if (directionSign === velocitySign) {
+                // Moving in correct direction
+                var distanceNeededToStop = (0, base_1.distanceNeededToAchieveSpeed)(this.velocityY, 0.0, this.deceleration);
+                if (distanceNeededToStop * 1.05 < -Math.abs(destinationDiff)) {
+                    // Slow down
+                    // Allow a certain factor of extra breaking, to enable a smooth breaking movement after detecting overshoot
+                    var requiredDeceleration = (0, base_1.accelerationNeededToAchieveChangeDistance)(this.velocityY, 0.0, destinationDiff);
+                    var deceleration = Math.min(this.deceleration * 1.1, Math.abs(requiredDeceleration));
+                    this.velocityY -= directionSign * deceleration * dt;
+                }
+                else {
+                    // Speed up (or keep max speed...)
+                    acceleration = Math.min(Math.abs(destinationDiff * 5), this.acceleration);
+                    this.velocityY += directionSign * acceleration * dt;
+                }
+            }
+            else if (velocitySign === 0) {
+                // Standing still - should accelerate
+                acceleration = Math.min(Math.abs(destinationDiff * 5), this.acceleration);
                 this.velocityY += directionSign * acceleration * dt;
             }
-        } else if(velocitySign === 0) {
-            // Standing still - should accelerate
-            acceleration = Math.min(Math.abs(destinationDiff*5), this.ACCELERATION);
-            this.velocityY += directionSign * acceleration * dt;
-        } else {
-            // Moving in wrong direction - decelerate as much as possible
-            this.velocityY -= velocitySign * this.DECELERATION * dt;
-            // Make sure we don't change direction within this time step - let standstill logic handle it
-            if(Math.sign(this.velocityY) !== velocitySign) {
-                this.velocityY = 0.0;
+            else {
+                // Moving in wrong direction - decelerate as much as possible
+                this.velocityY -= velocitySign * this.deceleration * dt;
+                // Make sure we don't change direction within this time step - let standstill logic handle it
+                if (Math.sign(this.velocityY) !== velocitySign) {
+                    this.velocityY = 0.0;
+                }
             }
         }
-    }
-
-    if(this.isMoving && Math.abs(destinationDiff) < 0.5 && Math.abs(this.velocityY) < 3) {
-        // Snap to destination and stop
-        this.moveTo(null, this.destinationY);
-        this.velocityY = 0.0;
-        this.isMoving = false;
-        this.handleDestinationArrival();
-    }
-};
-
-Elevator.prototype.handleDestinationArrival = function() {
-    this.trigger("stopped", this.getExactCurrentFloor());
-
-    if(this.isOnAFloor()) {
-        this.buttonStates[this.currentFloor] = false;
-        this.trigger("floor_buttons_changed", this.buttonStates, this.currentFloor);
-        this.trigger("stopped_at_floor", this.currentFloor);
-        // Need to allow users to get off first, so that new ones
-        // can enter on the same floor
-        this.trigger("exit_available", this.currentFloor, this);
-        this.trigger("entrance_available", this);
-    }
-};
-
-Elevator.prototype.goToFloor = function(floor) {
-    this.makeSureNotBusy();
-    this.isMoving = true;
-    this.destinationY = this.getYPosOfFloor(floor);
-};
-
-Elevator.prototype.getFirstPressedFloor = function() {
-    deprecationWarning("getFirstPressedFloor");
-    for(var i=0; i<this.buttonStates.length; i++) {
-        if(this.buttonStates[i]) { return i; }
-    }
-    return 0;
-};
-
-Elevator.prototype.getPressedFloors = function() {
-    for(var i=0, arr=[]; i<this.buttonStates.length; i++) {
-        if(this.buttonStates[i]) {
-            arr.push(i);
+        if (this.isMoving && Math.abs(destinationDiff) < 0.5 && Math.abs(this.velocityY) < 3) {
+            // Snap to destination and stop
+            this.moveTo(null, this.destinationY);
+            this.velocityY = 0.0;
+            this.isMoving = false;
+            this.handleDestinationArrival();
         }
-    }
-    return arr;
-};
-
-Elevator.prototype.isSuitableForTravelBetween = function(fromFloorNum, toFloorNum) {
-    if(fromFloorNum > toFloorNum) { return this.goingDownIndicator; }
-    if(fromFloorNum < toFloorNum) { return this.goingUpIndicator; }
-    return true;
-};
-
-Elevator.prototype.getYPosOfFloor = function(floorNum) {
-    return (this.floorCount - 1) * this.floorHeight - floorNum * this.floorHeight;
-};
-
-Elevator.prototype.getExactFloorOfYPos = function(y) {
-    return ((this.floorCount - 1) * this.floorHeight - y) / this.floorHeight;
-};
-
-Elevator.prototype.getExactCurrentFloor = function() {
-    return this.getExactFloorOfYPos(this.y);
-};
-
-Elevator.prototype.getDestinationFloor = function() {
-    return this.getExactFloorOfYPos(this.destinationY);
-};
-
-Elevator.prototype.getRoundedCurrentFloor = function() {
-    return Math.round(this.getExactCurrentFloor());
-};
-
-Elevator.prototype.getExactFutureFloorIfStopped = function() {
-    var distanceNeededToStop = (0,_base__WEBPACK_IMPORTED_MODULE_0__.distanceNeededToAchieveSpeed)(this.velocityY, 0.0, this.DECELERATION);
-    return this.getExactFloorOfYPos(this.y - Math.sign(this.velocityY) * distanceNeededToStop);
-};
-
-Elevator.prototype.isApproachingFloor = function(floorNum) {
-    var floorYPos = this.getYPosOfFloor(floorNum);
-    var elevToFloor = floorYPos - this.y;
-    return this.velocityY !== 0.0 && (Math.sign(this.velocityY) === Math.sign(elevToFloor));
-};
-
-Elevator.prototype.isOnAFloor = function() {
-    return (0,_base__WEBPACK_IMPORTED_MODULE_0__.epsilonEquals)(this.getExactCurrentFloor(), this.getRoundedCurrentFloor());
-};
-
-Elevator.prototype.getLoadFactor = function() {
-    var load = _.reduce(this.userSlots, function(sum, slot) { return sum + (slot.user ? slot.user.weight : 0); }, 0);
-    return load / (this.maxUsers * 100);
-};
-
-Elevator.prototype.isFull = function() {
-    for(var i=0; i<this.userSlots.length; i++) { if(this.userSlots[i].user === null) { return false; } }
-    return true;
-};
-Elevator.prototype.isEmpty = function() {
-    for(var i=0; i<this.userSlots.length; i++) { if(this.userSlots[i].user !== null) { return false; } }
-    return true;
-};
-
-Elevator.prototype.handleNewState = function() {
-    // Recalculate the floor number etc
-    var currentFloor = this.getRoundedCurrentFloor();
-    if(currentFloor !== this.currentFloor) {
-        this.moveCount++;
-        this.currentFloor = currentFloor;
-        this.trigger("new_current_floor", this.currentFloor);
-    }
-
-    // Check if we are about to pass a floor
-    var futureTruncFloorIfStopped = Math.trunc(this.getExactFutureFloorIfStopped());
-    if(futureTruncFloorIfStopped !== this.previousTruncFutureFloorIfStopped) {
-        // The following is somewhat ugly.
-        // A formally correct solution should iterate and generate events for all passed floors,
-        // because the elevator could theoretically have such a velocity that it would
-        // pass more than one floor over the course of one state change (update).
-        // But I can't currently be arsed to implement it because it's overkill.
-        var floorBeingPassed = Math.round(this.getExactFutureFloorIfStopped());
-
-        // Never emit passing_floor event for the destination floor
-        // Because if it's the destination we're not going to pass it, at least not intentionally
-        if(this.getDestinationFloor() !== floorBeingPassed && this.isApproachingFloor(floorBeingPassed)) {
-            var direction = this.velocityY > 0.0 ? "down" : "up";
-            this.trigger("passing_floor", floorBeingPassed, direction);
+    };
+    Elevator.prototype.handleDestinationArrival = function () {
+        this.trigger("stopped", this.getExactCurrentFloor());
+        if (this.isOnAFloor()) {
+            this.buttonStates[this.currentFloor] = false;
+            this.trigger("floor_buttons_changed", this.buttonStates, this.currentFloor);
+            this.trigger("stopped_at_floor", this.currentFloor);
+            // Need to allow users to get off first, so that new ones
+            // can enter on the same floor
+            this.trigger("exit_available", this.currentFloor, this);
+            this.trigger("entrance_available", this);
         }
-    }
-    this.previousTruncFutureFloorIfStopped = futureTruncFloorIfStopped;
-};
-
-
+    };
+    Elevator.prototype.goToFloor = function (floor) {
+        this.makeSureNotBusy();
+        this.isMoving = true;
+        this.destinationY = this.getYPosOfFloor(floor);
+    };
+    Elevator.prototype.getFirstPressedFloor = function () {
+        (0, base_1.deprecationWarning)("getFirstPressedFloor");
+        for (var i = 0; i < this.buttonStates.length; i++) {
+            if (this.buttonStates[i]) {
+                return i;
+            }
+        }
+        return 0;
+    };
+    Elevator.prototype.getPressedFloors = function () {
+        var arr = [];
+        for (var i = 0; i < this.buttonStates.length; ++i) {
+            if (this.buttonStates[i]) {
+                arr.push(i);
+            }
+        }
+        return arr;
+    };
+    Elevator.prototype.isSuitableForTravelBetween = function (fromFloorNum, toFloorNum) {
+        if (fromFloorNum > toFloorNum) {
+            return this.goingDownIndicator;
+        }
+        if (fromFloorNum < toFloorNum) {
+            return this.goingUpIndicator;
+        }
+        return true;
+    };
+    Elevator.prototype.getYPosOfFloor = function (floorNum) {
+        return (this.floorCount - 1) * this.floorHeight - floorNum * this.floorHeight;
+    };
+    Elevator.prototype.getExactFloorOfYPos = function (y) {
+        return ((this.floorCount - 1) * this.floorHeight - y) / this.floorHeight;
+    };
+    Elevator.prototype.getExactCurrentFloor = function () {
+        return this.getExactFloorOfYPos(this.y);
+    };
+    Elevator.prototype.getDestinationFloor = function () {
+        return this.getExactFloorOfYPos(this.destinationY);
+    };
+    Elevator.prototype.getRoundedCurrentFloor = function () {
+        return Math.round(this.getExactCurrentFloor());
+    };
+    Elevator.prototype.getExactFutureFloorIfStopped = function () {
+        var distanceNeededToStop = (0, base_1.distanceNeededToAchieveSpeed)(this.velocityY, 0.0, this.deceleration);
+        return this.getExactFloorOfYPos(this.y - Math.sign(this.velocityY) * distanceNeededToStop);
+    };
+    Elevator.prototype.isApproachingFloor = function (floorNum) {
+        var floorYPos = this.getYPosOfFloor(floorNum);
+        var elevToFloor = floorYPos - this.y;
+        return this.velocityY !== 0.0 && (Math.sign(this.velocityY) === Math.sign(elevToFloor));
+    };
+    Elevator.prototype.isOnAFloor = function () {
+        return (0, base_1.epsilonEquals)(this.getExactCurrentFloor(), this.getRoundedCurrentFloor());
+    };
+    Elevator.prototype.getLoadFactor = function () {
+        var load = _.reduce(this.userSlots, function (sum, slot) { return sum + (slot.user ? slot.user.weight : 0); }, 0);
+        return load / (this.maxUsers * 100);
+    };
+    Elevator.prototype.isFull = function () {
+        for (var i = 0; i < this.userSlots.length; i++) {
+            if (this.userSlots[i].user === null) {
+                return false;
+            }
+        }
+        return true;
+    };
+    Elevator.prototype.isEmpty = function () {
+        for (var i = 0; i < this.userSlots.length; i++) {
+            if (this.userSlots[i].user !== null) {
+                return false;
+            }
+        }
+        return true;
+    };
+    Elevator.prototype.handleNewState = function () {
+        // Recalculate the floor number etc
+        var currentFloor = this.getRoundedCurrentFloor();
+        if (currentFloor !== this.currentFloor) {
+            this.moveCount++;
+            this.currentFloor = currentFloor;
+            this.trigger("new_current_floor", this.currentFloor);
+        }
+        // Check if we are about to pass a floor
+        var futureTruncFloorIfStopped = Math.trunc(this.getExactFutureFloorIfStopped());
+        if (futureTruncFloorIfStopped !== this.previousTruncFutureFloorIfStopped) {
+            // The following is somewhat ugly.
+            // A formally correct solution should iterate and generate events for all passed floors,
+            // because the elevator could theoretically have such a velocity that it would
+            // pass more than one floor over the course of one state change (update).
+            // But I can't currently be arsed to implement it because it's overkill.
+            var floorBeingPassed = Math.round(this.getExactFutureFloorIfStopped());
+            // Never emit passing_floor event for the destination floor
+            // Because if it's the destination we're not going to pass it, at least not intentionally
+            if (this.getDestinationFloor() !== floorBeingPassed && this.isApproachingFloor(floorBeingPassed)) {
+                var direction = this.velocityY > 0.0 ? "down" /* down */ : "up" /* up */;
+                this.trigger("passing_floor", floorBeingPassed, direction);
+            }
+        }
+        this.previousTruncFutureFloorIfStopped = futureTruncFloorIfStopped;
+    };
+    return Elevator;
+}(movable_1.default));
+exports["default"] = Elevator;
 
 
 /***/ }),
 
-/***/ "./src/js/floor.js":
+/***/ "./src/ts/floor.ts":
 /*!*************************!*\
-  !*** ./src/js/floor.js ***!
+  !*** ./src/ts/floor.ts ***!
   \*************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "asFloor": () => (/* binding */ asFloor)
-/* harmony export */ });
-/* harmony import */ var _lib_riot__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./lib/riot */ "./src/js/lib/riot.js");
-/* harmony import */ var _lib_riot__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_lib_riot__WEBPACK_IMPORTED_MODULE_0__);
 
-
-var asFloor = function(obj, floorLevel, yPosition, errorHandler) {
-    var floor = riot.observable(obj);
-
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.asFloor = void 0;
+var riot_1 = __webpack_require__(/*! ./lib/riot */ "./src/ts/lib/riot.ts");
+var asFloor = function (obj, floorLevel, yPosition, errorHandler) {
+    var floor = riot_1.riot.observable(obj);
     floor.level = floorLevel;
     floor.yPosition = yPosition;
-    floor.buttonStates = {up: "", down: ""};
-
+    floor.buttonStates = { up: "", down: "" };
     // TODO: Ideally the floor should have a facade where tryTrigger is done
-    var tryTrigger = function(event, arg1, arg2, arg3, arg4) {
+    var tryTrigger = function (event) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
         try {
-            floor.trigger(event, arg1, arg2, arg3, arg4);
-        } catch(e) { errorHandler(e); }
+            floor.trigger.apply(floor, __spreadArray([event], args, false));
+        }
+        catch (e) {
+            errorHandler(e);
+        }
     };
-
-    floor.pressUpButton = function() {
+    floor.pressUpButton = function () {
         var prev = floor.buttonStates.up;
         floor.buttonStates.up = "activated";
-        if(prev !== floor.buttonStates.up) {
+        if (prev !== floor.buttonStates.up) {
             tryTrigger("buttonstate_change", floor.buttonStates);
             tryTrigger("up_button_pressed", floor);
         }
     };
-
-    floor.pressDownButton = function() {
+    floor.pressDownButton = function () {
         var prev = floor.buttonStates.down;
         floor.buttonStates.down = "activated";
-        if(prev !== floor.buttonStates.down) {
+        if (prev !== floor.buttonStates.down) {
             tryTrigger("buttonstate_change", floor.buttonStates);
             tryTrigger("down_button_pressed", floor);
         }
     };
-
-    floor.elevatorAvailable = function(elevator) {
-        if(elevator.goingUpIndicator && floor.buttonStates.up) {
+    floor.elevatorAvailable = function (elevator) {
+        if (elevator.goingUpIndicator && floor.buttonStates.up) {
             floor.buttonStates.up = "";
             tryTrigger("buttonstate_change", floor.buttonStates);
         }
-        if(elevator.goingDownIndicator && floor.buttonStates.down) {
+        if (elevator.goingDownIndicator && floor.buttonStates.down) {
             floor.buttonStates.down = "";
             tryTrigger("buttonstate_change", floor.buttonStates);
         }
     };
-
-    floor.getSpawnPosY = function() {
+    floor.getSpawnPosY = function () {
         return floor.yPosition + 30;
     };
-
-    floor.floorNum = function() {
+    floor.floorNum = function () {
         return floor.level;
     };
-
     return floor;
 };
-
-
+exports.asFloor = asFloor;
 
 
 /***/ }),
 
-/***/ "./src/js/interfaces.js":
+/***/ "./src/ts/interfaces.ts":
 /*!******************************!*\
-  !*** ./src/js/interfaces.js ***!
+  !*** ./src/ts/interfaces.ts ***!
   \******************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "asElevatorInterface": () => (/* binding */ asElevatorInterface)
-/* harmony export */ });
-/* harmony import */ var _lib_riot__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./lib/riot */ "./src/js/lib/riot.js");
-/* harmony import */ var _lib_riot__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_lib_riot__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./base */ "./src/js/base.js");
 
-
-
-
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.asElevatorInterface = void 0;
+var riot_1 = __webpack_require__(/*! ./lib/riot */ "./src/ts/lib/riot.ts");
+var _ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+var base_1 = __webpack_require__(/*! ./base */ "./src/ts/base.ts");
 // Interface that hides actual elevator object behind a more robust facade,
 // while also exposing relevant events, and providing some helper queue
 // functions that allow programming without async logic.
-var asElevatorInterface = function(obj, elevator, floorCount, errorHandler) {
-    var elevatorInterface = riot.observable(obj);
-
+var asElevatorInterface = function (obj, elevator, floorCount, errorHandler) {
+    var elevatorInterface = riot_1.riot.observable(obj);
     elevatorInterface.destinationQueue = [];
-
-    var tryTrigger = function(event, arg1, arg2, arg3, arg4) {
+    var tryTrigger = function (event) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
         try {
-            elevatorInterface.trigger(event, arg1, arg2, arg3, arg4);
-        } catch(e) { errorHandler(e); }
+            elevatorInterface.trigger.apply(elevatorInterface, __spreadArray([event], args, false));
+        }
+        catch (e) {
+            errorHandler(e);
+        }
     };
-
-    elevatorInterface.checkDestinationQueue = function() {
-        if(!elevator.isBusy()) {
-            if(elevatorInterface.destinationQueue.length) {
+    elevatorInterface.checkDestinationQueue = function () {
+        if (!elevator.isBusy()) {
+            if (elevatorInterface.destinationQueue.length > 0) {
                 elevator.goToFloor(_.first(elevatorInterface.destinationQueue));
-            } else {
+            }
+            else {
                 tryTrigger("idle");
             }
         }
     };
-
     // TODO: Write tests for this queueing logic
-    elevatorInterface.goToFloor = function(floorNum, forceNow) {
-        floorNum = (0,_base__WEBPACK_IMPORTED_MODULE_1__.limitNumber)(Number(floorNum), 0, floorCount - 1);
+    elevatorInterface.goToFloor = function (floorNum, forceNow) {
+        floorNum = (0, base_1.limitNumber)(Number(floorNum), 0, floorCount - 1);
         // Auto-prevent immediately duplicate destinations
-        if(elevatorInterface.destinationQueue.length) {
+        if (elevatorInterface.destinationQueue.length > 0) {
             var adjacentElement = forceNow ? _.first(elevatorInterface.destinationQueue) : _.last(elevatorInterface.destinationQueue);
-            if((0,_base__WEBPACK_IMPORTED_MODULE_1__.epsilonEquals)(floorNum, adjacentElement)) {
+            if ((0, base_1.epsilonEquals)(floorNum, adjacentElement)) {
                 return;
             }
         }
         elevatorInterface.destinationQueue[(forceNow ? "unshift" : "push")](floorNum);
         elevatorInterface.checkDestinationQueue();
     };
-
-    elevatorInterface.stop = function() {
+    elevatorInterface.stop = function () {
         elevatorInterface.destinationQueue = [];
-        if(!elevator.isBusy()) {
+        if (!elevator.isBusy()) {
             elevator.goToFloor(elevator.getExactFutureFloorIfStopped());
         }
     };
-
-    elevatorInterface.getFirstPressedFloor = function() { return elevator.getFirstPressedFloor(); }; // Undocumented and deprecated, will be removed
-    elevatorInterface.getPressedFloors = function() { return elevator.getPressedFloors(); };
-    elevatorInterface.currentFloor = function() { return elevator.currentFloor; };
-    elevatorInterface.maxPassengerCount = function() { return elevator.maxUsers; };
-    elevatorInterface.loadFactor = function() { return elevator.getLoadFactor(); };
-    elevatorInterface.destinationDirection = function() {
-      if(elevator.destinationY === elevator.y) { return "stopped"; }
-      return elevator.destinationY > elevator.y ? "down" : "up";
-    }
-    elevatorInterface.goingUpIndicator = (0,_base__WEBPACK_IMPORTED_MODULE_1__.createBoolPassthroughFunction)(elevatorInterface, elevator, "goingUpIndicator");
-    elevatorInterface.goingDownIndicator = (0,_base__WEBPACK_IMPORTED_MODULE_1__.createBoolPassthroughFunction)(elevatorInterface, elevator, "goingDownIndicator");
-
-    elevator.on("stopped", function(position) {
-        if(elevatorInterface.destinationQueue.length && (0,_base__WEBPACK_IMPORTED_MODULE_1__.epsilonEquals)(_.first(elevatorInterface.destinationQueue), position)) {
+    elevatorInterface.getFirstPressedFloor = function () { return elevator.getFirstPressedFloor(); }; // Undocumented and deprecated, will be removed
+    elevatorInterface.getPressedFloors = function () { return elevator.getPressedFloors(); };
+    elevatorInterface.currentFloor = function () { return elevator.currentFloor; };
+    elevatorInterface.maxPassengerCount = function () { return elevator.maxUsers; };
+    elevatorInterface.loadFactor = function () { return elevator.getLoadFactor(); };
+    elevatorInterface.destinationDirection = function () {
+        if (elevator.destinationY === elevator.y) {
+            return "stopped" /* stopped */;
+        }
+        return elevator.destinationY > elevator.y ? "down" /* down */ : "up" /* up */;
+    };
+    elevatorInterface.goingUpIndicator = (0, base_1.createBoolPassthroughFunction)(elevatorInterface, elevator, "goingUpIndicator");
+    elevatorInterface.goingDownIndicator = (0, base_1.createBoolPassthroughFunction)(elevatorInterface, elevator, "goingDownIndicator");
+    elevator.on("stopped", function (position) {
+        if (elevatorInterface.destinationQueue.length > 0 && (0, base_1.epsilonEquals)(_.first(elevatorInterface.destinationQueue), position)) {
             // Reached the destination, so remove element at front of queue
             elevatorInterface.destinationQueue = _.drop(elevatorInterface.destinationQueue);
-            if(elevator.isOnAFloor()) {
-                elevator.wait(1, function() {
+            if (elevator.isOnAFloor()) {
+                elevator.wait(1, function () {
                     elevatorInterface.checkDestinationQueue();
                 });
-            } else {
+            }
+            else {
                 elevatorInterface.checkDestinationQueue();
             }
         }
     });
-
-    elevator.on("passing_floor", function(floorNum, direction) {
+    elevator.on("passing_floor", function (floorNum, direction) {
         tryTrigger("passing_floor", floorNum, direction);
     });
-
-    elevator.on("stopped_at_floor", function(floorNum) {
+    elevator.on("stopped_at_floor", function (floorNum) {
         tryTrigger("stopped_at_floor", floorNum);
     });
-    elevator.on("floor_button_pressed", function(floorNum) {
+    elevator.on("floor_button_pressed", function (floorNum) {
         tryTrigger("floor_button_pressed", floorNum);
     });
-
     return elevatorInterface;
 };
-
-
+exports.asElevatorInterface = asElevatorInterface;
 
 
 /***/ }),
 
-/***/ "./src/js/lib/riot.js":
+/***/ "./src/ts/lib/riot.ts":
 /*!****************************!*\
-  !*** ./src/js/lib/riot.js ***!
+  !*** ./src/ts/lib/riot.ts ***!
   \****************************/
 /***/ ((__unused_webpack_module, exports) => {
 
+"use strict";
 /* Riot 1.0.2, @license MIT, (c) 2014 Muut Inc + contributors */
-(function(riot) { "use strict";
 
-riot.observable = function(el) {
-  var callbacks = {}, slice = [].slice;
-
-  el.on = function(events, fn) {
-    if (typeof fn === "function") {
-      events.replace(/[^\s]+/g, function(name, pos) {
-        (callbacks[name] = callbacks[name] || []).push(fn);
-        fn.typed = pos > 0;
-      });
-    }
-    return el;
-  };
-
-  el.off = function(events, fn) {
-    if (events === "*") callbacks = {};
-    else if (fn) {
-      var arr = callbacks[events];
-      for (var i = 0, cb; (cb = arr && arr[i]); ++i) {
-        if (cb === fn) arr.splice(i, 1);
-      }
-    } else {
-      events.replace(/[^\s]+/g, function(name) {
-        callbacks[name] = [];
-      });
-    }
-    return el;
-  };
-
-  // only single event supported
-  el.one = function(name, fn) {
-    if (fn) fn.one = true;
-    return el.on(name, fn);
-  };
-
-  el.trigger = function(name) {
-    var args = slice.call(arguments, 1),
-      fns = callbacks[name] || [];
-
-    for (var i = 0, fn; (fn = fns[i]); ++i) {
-      if (!fn.busy) {
-        fn.busy = true;
-        fn.apply(el, fn.typed ? [name].concat(args) : args);
-        if (fn.one) { fns.splice(i, 1); i--; }
-        else if(fns[i] && fns[i] !== fn) { i-- } // Makes self-removal possible during iteration
-        fn.busy = false;
-      }
-    }
-
-    return el;
-  };
-
-  return el;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.riot = void 0;
+var FN = {}; // Precompiled templates (JavaScript functions)
+var template_escape = { "\\": "\\\\", "\n": "\\n", "\r": "\\r", "'": "\\'" };
+var render_escape = { '&': '&amp;', '"': '&quot;', '<': '&lt;', '>': '&gt;' };
+var default_escape_fn = function (str, key) {
+    return str === null ? '' : (str + '').replace(/[&\"<>]/g, function (char) {
+        return render_escape[char];
+    });
 };
-
-var FN = {}, // Precompiled templates (JavaScript functions)
-  template_escape = {"\\": "\\\\", "\n": "\\n", "\r": "\\r", "'": "\\'"},
-  render_escape = {'&': '&amp;', '"': '&quot;', '<': '&lt;', '>': '&gt;'};
-
-function default_escape_fn(str, key) {
-  return str == null ? '' : (str+'').replace(/[&\"<>]/g, function(char) {
-    return render_escape[char];
-  });
-}
-
-riot.render = function(tmpl, data, escape_fn) {
-  if (escape_fn === true) escape_fn = default_escape_fn;
-  tmpl = tmpl || '';
-
-  return (FN[tmpl] = FN[tmpl] || new Function("_", "e", "return '" +
-    tmpl.replace(/[\\\n\r']/g, function(char) {
-      return template_escape[char];
-    }).replace(/{\s*([\w\.]+)\s*}/g, "' + (e?e(_.$1,'$1'):_.$1||(_.$1==null?'':_.$1)) + '") + "'")
-  )(data, escape_fn);
+exports.riot = {};
+exports.riot.observable = function (el) {
+    var callbacks = {}, slice = [].slice;
+    var result = el;
+    result.on = function (events, fn) {
+        if (typeof fn === "function") {
+            events.replace(/[^\s]+/g, function (name, pos) {
+                (callbacks[name] = callbacks[name] || []).push(fn);
+                fn.typed = pos > 0;
+                return "";
+            });
+        }
+        return this;
+    };
+    result.off = function (events, fn) {
+        if (events === "*")
+            callbacks = {};
+        else if (fn) {
+            var arr = callbacks[events];
+            for (var i = 0, cb; (cb = arr && arr[i]); ++i) {
+                if (cb === fn)
+                    arr.splice(i, 1);
+            }
+        }
+        else {
+            events.replace(/[^\s]+/g, function (name) {
+                callbacks[name] = [];
+                return "";
+            });
+        }
+        return this;
+    };
+    // only single event supported
+    result.one = function (name, fn) {
+        if (fn)
+            fn.one = true;
+        return this.on(name, fn);
+    };
+    result.trigger = function (name) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        var fns = callbacks[name] || [];
+        for (var i = 0, fn; (fn = fns[i]); ++i) {
+            if (!fn.busy) {
+                fn.busy = true;
+                fn.apply(el, fn.typed ? [name].concat(args) : args);
+                if (fn.one) {
+                    fns.splice(i, 1);
+                    i--;
+                }
+                else if (fns[i] && fns[i] !== fn) {
+                    i--;
+                } // Makes self-removal possible during iteration
+                fn.busy = false;
+            }
+        }
+        return this;
+    };
+    return result;
+};
+exports.riot.render = function (tmpl, data, escape_fn) {
+    if (escape_fn === true)
+        escape_fn = default_escape_fn;
+    tmpl = tmpl || '';
+    // @ts-ignore
+    return (FN[tmpl] = FN[tmpl] || new Function("_", "e", "return '" +
+        tmpl.replace(/[\\\n\r']/g, function (char) {
+            return template_escape[char];
+        }).replace(/{\s*([\w\.]+)\s*}/g, "' + (e?e(_.$1,'$1'):_.$1||(_.$1==null?'':_.$1)) + '") + "'"))(data, escape_fn);
 };
 /* Cross browser popstate */
 (function () {
-  // for browsers only
-  if (typeof window === "undefined") return;
-
-  var currentHash,
-    pops = riot.observable({}),
-    listen = window.addEventListener,
-    doc = document;
-
-  function pop(hash) {
-    hash = hash.type ? location.hash : hash;
-    if (hash !== currentHash) pops.trigger("pop", hash);
-    currentHash = hash;
-  }
-
-  /* Always fire pop event upon page load (normalize behaviour across browsers) */
-
-  // standard browsers
-  if (listen) {
+    // for browsers only
+    if (typeof window === "undefined")
+        return;
+    var currentHash, pops = exports.riot.observable({}), listen = window.addEventListener, doc = document;
+    var pop = function (hash) {
+        hash = hash.type ? location.hash : hash;
+        if (hash !== currentHash)
+            pops.trigger("pop", hash);
+        currentHash = hash;
+    };
+    /* Always fire pop event upon page load (normalize behaviour across browsers) */
     listen("popstate", pop, false);
     doc.addEventListener("DOMContentLoaded", pop, false);
-
-  // IE
-  } else {
-    doc.attachEvent("onreadystatechange", function() {
-      if (doc.readyState === "complete") pop("");
-    });
-  }
-
-  /* Change the browser URL or listen to changes on the URL */
-  riot.route = function(to) {
-    // listen
-    if (typeof to === "function") return pops.on("pop", to);
-
-    // fire
-    if (history.pushState) history.pushState(0, 0, to);
-    pop(to);
-
-  };
+    /* Change the browser URL or listen to changes on the URL */
+    exports.riot.route = function (to) {
+        // listen
+        if (typeof to === "function") {
+            pops.on("pop", to);
+            return;
+        }
+        // fire
+        if (history.pushState)
+            history.pushState(0, "0", to);
+        pop(to);
+    };
 })();
-})(typeof window !== "undefined" ? window.riot = {} : ( true ? exports : 0));
 
 
 /***/ }),
 
-/***/ "./src/js/lib/unobservable.js":
+/***/ "./src/ts/lib/unobservable.ts":
 /*!************************************!*\
-  !*** ./src/js/lib/unobservable.js ***!
+  !*** ./src/ts/lib/unobservable.ts ***!
   \************************************/
-/***/ ((__unused_webpack_module, exports) => {
+/***/ (function(__unused_webpack_module, exports) {
 
-(function(unobservable) { "use strict";
+"use strict";
 
-// Black magic stuff
-function CustomArray(numPreallocated) {
-    this.arr = new Array(numPreallocated);
-    this.len = 0;
-}
-CustomArray.prototype.push = function(e) {
-    this.arr[this.len++] = e;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
-CustomArray.prototype.removeAt = function(index) {
-    for(var j=index+1; j<this.len; j++) {
-        this.arr[j-1] = this.arr[j];
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Observable = exports.CustomArray = void 0;
+// Black magic stuff
+var CustomArray = /** @class */ (function () {
+    function CustomArray(numPreallocated) {
+        this.arr = new Array(numPreallocated);
+        this.len = 0;
     }
-    // Potential memory leak right here, last element does not get nulled out as it should? Or?
-    this.len--;
-}
-
-unobservable.observable = function(obj, options) {
-    options = options || {};
-    options.numPreallocatedHandlers = options.numPreallocatedHandlers || 0;
-    options.addDataMembers = (typeof options.addDataMembers !== "undefined") ? options.addDataMembers : true;
-    if(options.addDataMembers) {
-        obj.callbacks = {};
+    CustomArray.prototype.push = function (e) {
+        this.arr[this.len++] = e;
+    };
+    CustomArray.prototype.removeAt = function (index) {
+        for (var j = index + 1; j < this.len; j++) {
+            this.arr[j - 1] = this.arr[j];
+        }
+        // Potential memory leak right here, last element does not get nulled out as it should? Or?
+        this.len--;
+    };
+    return CustomArray;
+}());
+exports.CustomArray = CustomArray;
+var Observable = /** @class */ (function () {
+    function Observable() {
+        this.callbacks = {};
     }
-
-    obj.on = function(events, fn) {
+    Observable.prototype.on = function (events, fn) {
         // This function is convoluted because we would like to avoid using split or regex, both which cause an array allocation
         var count = 0;
-        for(var i=0, len=events.length; i<len; ++i) {
-            var name = "";
+        for (var i = 0, len = events.length; i < len; ++i) {
+            var name_1 = "";
             var i2 = events.indexOf(" ", i);
-            if(i2 < 0) {
-                if(i < events.length) {
-                    name = events.slice(i);
+            if (i2 < 0) {
+                if (i < events.length) {
+                    name_1 = events.slice(i);
                     count++;
                 }
                 i = len;
             }
-            else if(i2-i > 1) {
-                var name = events.slice(i, i2);
+            else if (i2 - i > 1) {
+                var name_2 = events.slice(i, i2);
                 count++;
                 i = i2;
             }
-            if(name.length > 0) {
-                (this.callbacks[name] = this.callbacks[name] || new CustomArray()).push(fn);
+            if (name_1.length > 0) {
+                (this.callbacks[name_1] = this.callbacks[name_1] || new CustomArray()).push(fn);
             }
         }
         fn.typed = count > 1;
+        return this;
     };
-
-    obj.off = function(events, fn) {
-        if (events === "*") this.callbacks = {};
+    Observable.prototype.off = function (events, fn) {
+        if (events === "*")
+            this.callbacks = {};
         else if (fn) {
             var fns = this.callbacks[events];
-            for (var i = 0, len=fns.len; i<len; ++i) {
+            for (var i = 0, len = fns.len; i < len; ++i) {
                 var cb = fns.arr[i];
-                if(cb === fn) { fns.removeAt(i); }
+                if (cb === fn) {
+                    fns.removeAt(i);
+                }
             }
-        } else {
+        }
+        else {
             var count = 0;
-            for(var i=0, len=events.length; i<len; ++i) {
-                var name = "";
+            for (var i = 0, len = events.length; i < len; ++i) {
+                var name_3 = "";
                 var i2 = events.indexOf(" ", i);
-                if(i2 < 0) {
-                    if(i < events.length) {
-                        name = events.slice(i);
+                if (i2 < 0) {
+                    if (i < events.length) {
+                        name_3 = events.slice(i);
                     }
                     i = len;
                 }
-                else if(i2-i > 1) {
-                    var name = events.slice(i, i2);
+                else if (i2 - i > 1) {
+                    var name_4 = events.slice(i, i2);
                     i = i2;
                 }
-                if(name.length > 0) {
-                    this.callbacks[name] = undefined;
+                if (name_3.length > 0) {
+                    this.callbacks[name_3] = undefined;
                 }
             }
         }
         return this;
     };
-
     // Only single event supported
-    obj.one = function(name, fn) {
+    Observable.prototype.one = function (name, fn) {
         fn.one = true;
         return this.on(name, fn);
     };
-
-    obj.trigger = function(name, arg1, arg2, arg3, arg4) {
+    Observable.prototype.trigger = function (name) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
         // Just using bogus args is much faster than manipulating the arguments array
         var fns = this.callbacks[name];
-        if(!fns) { return this; }
-
-        for (var i=0; i<fns.len; i++) { // Note: len can change during iteration
+        if (!fns) {
+            return this;
+        }
+        for (var i = 0; i < fns.len; ++i) { // Note: len can change during iteration
             var fn = fns.arr[i];
-            if(fn.typed) { fn.call(this, name, arg1, arg2, arg3, arg4); }
-            else { fn.call(this, arg1, arg2, arg3, arg4); }
-            if (fn.one) { fns.removeAt(i, 1); fn.one = false; i--; }
-            else if(fns.arr[i] && fns.arr[i] !== fn) { i-- } // Makes self-removal possible during iteration
+            if (fn.typed) {
+                fn.call.apply(fn, __spreadArray([this, name], args, false));
+            }
+            else {
+                fn.call.apply(fn, __spreadArray([this], args, false));
+            }
+            if (fn.one) {
+                fns.removeAt(i, 1);
+                fn.one = false;
+                i--;
+            }
+            else if (fns.arr[i] && fns.arr[i] !== fn) {
+                i--;
+            } // Makes self-removal possible during iteration
         }
         return this;
     };
-    return obj;
-};
-
-unobservable.Observable = function() {
-    this.callbacks = {};
-};
-unobservable.observable(unobservable.Observable.prototype, {numPreallocatedHandlers: 2, addDataMembers: false});
-unobservable.asObservable = unobservable.observable;
-unobservable.CustomArray = CustomArray; // Expose for testability
-})((typeof window !== "undefined" ? window.unobservable = {} : ( true ? exports : 0)));
+    return Observable;
+}());
+exports.Observable = Observable;
 
 
 /***/ }),
 
-/***/ "./src/js/movable.js":
+/***/ "./src/ts/movable.ts":
 /*!***************************!*\
-  !*** ./src/js/movable.js ***!
+  !*** ./src/ts/movable.ts ***!
   \***************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ Movable),
-/* harmony export */   "linearInterpolate": () => (/* binding */ linearInterpolate)
-/* harmony export */ });
-/* harmony import */ var _lib_unobservable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./lib/unobservable */ "./src/js/lib/unobservable.js");
-/* harmony import */ var _lib_unobservable__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_lib_unobservable__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./base */ "./src/js/base.js");
 
-
-
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.linearInterpolate = void 0;
+var unobservable_1 = __webpack_require__(/*! ./lib/unobservable */ "./src/ts/lib/unobservable.ts");
 var EPSILON = 0.00001;
-
-var linearInterpolate = function(value0, value1, x) {
+var linearInterpolate = function (value0, value1, x) {
     return value0 + (value1 - value0) * x;
 };
-var powInterpolate = function(value0, value1, x, a) {
-    return value0 + (value1 - value0) * Math.pow(x, a) / (Math.pow(x, a) + Math.pow(1-x, a));
+exports.linearInterpolate = linearInterpolate;
+var powInterpolate = function (value0, value1, x, a) {
+    return value0 + (value1 - value0) * Math.pow(x, a) / (Math.pow(x, a) + Math.pow(1 - x, a));
 };
-var coolInterpolate = function(value0, value1, x) {
+var coolInterpolate = function (value0, value1, x) {
     return powInterpolate(value0, value1, x, 1.3);
 };
 var DEFAULT_INTERPOLATOR = coolInterpolate;
-
-var _tmpPosStorage = [0,0];
-
-function Movable() {
-    (0,_base__WEBPACK_IMPORTED_MODULE_1__.newGuard)(this, Movable);
-    unobservable.Observable.call(this);
-    var movable = this;
-    movable.x = 0.0;
-    movable.y = 0.0;
-    movable.parent = null;
-    movable.worldX = 0.0;
-    movable.worldY = 0.0;
-    movable.currentTask = null;
-
-    movable.trigger('new_state', movable);
-}
-Movable.prototype = Object.create(unobservable.Observable.prototype);
-
-Movable.prototype.updateDisplayPosition = function(forceTrigger) {
-    this.getWorldPosition(_tmpPosStorage);
-    var oldX = this.worldX;
-    var oldY = this.worldY;
-    this.worldX = _tmpPosStorage[0];
-    this.worldY = _tmpPosStorage[1];
-    if(oldX !== this.worldX || oldY !== this.worldY || forceTrigger === true) {
-        this.trigger('new_display_state', this);
+var _tmpPosStorage = [0, 0];
+var Movable = /** @class */ (function (_super) {
+    __extends(Movable, _super);
+    function Movable() {
+        var _this = _super.call(this) || this;
+        _this.x = 0.0;
+        _this.y = 0.0;
+        _this.parent = null;
+        _this.worldX = 0.0;
+        _this.worldY = 0.0;
+        _this.currentTask = null;
+        _this.trigger('new_state', _this);
+        return _this;
     }
-};
-
-Movable.prototype.moveTo = function(newX, newY) {
-    if(newX !== null) { this.x = newX; }
-    if(newY !== null) { this.y = newY; }
-    this.trigger("new_state", this);
-};
-
-Movable.prototype.moveToFast = function(newX, newY) {
-    this.x = newX;
-    this.y = newY;
-    this.trigger("new_state", this);
-}
-
-Movable.prototype.isBusy = function() {
-    return this.currentTask !== null;
-};
-
-Movable.prototype.makeSureNotBusy = function() {
-    if(this.isBusy()) {
-        console.error("Attempt to use movable while it was busy", this);
-        throw({message: "Object is busy - you should use callback", obj: this});
-    }
-};
-
-Movable.prototype.wait = function(millis, cb) {
-    this.makeSureNotBusy();
-    var timeSpent = 0.0;
-    var self = this;
-    self.currentTask = function waitTask(dt) {
-        timeSpent += dt;
-        if(timeSpent > millis) {
-            self.currentTask = null;
-            if(cb) { cb(); }
+    Movable.prototype.updateDisplayPosition = function (forceTrigger) {
+        this.getWorldPosition(_tmpPosStorage);
+        var oldX = this.worldX;
+        var oldY = this.worldY;
+        this.worldX = _tmpPosStorage[0];
+        this.worldY = _tmpPosStorage[1];
+        if (oldX !== this.worldX || oldY !== this.worldY || forceTrigger === true) {
+            this.trigger('new_display_state', this);
         }
     };
-};
-
-Movable.prototype.moveToOverTime = function(newX, newY, timeToSpend, interpolator, cb) {
-    this.makeSureNotBusy();
-    this.currentTask = true;
-    if(newX === null) { newX = this.x; }
-    if(newY === null) { newY = this.y; }
-    if(typeof interpolator === "undefined") { interpolator = DEFAULT_INTERPOLATOR; }
-    var origX = this.x;
-    var origY = this.y;
-    var timeSpent = 0.0;
-    var self = this;
-    self.currentTask = function moveToOverTimeTask(dt) {
-        timeSpent = Math.min(timeToSpend, timeSpent + dt);
-        if(timeSpent === timeToSpend) { // Epsilon issues possibly?
-            self.moveToFast(newX, newY);
-            self.currentTask = null;
-            if(cb) { cb(); }
-        } else {
-            var factor = timeSpent / timeToSpend;
-            self.moveToFast(interpolator(origX, newX, factor), interpolator(origY, newY, factor));
+    Movable.prototype.moveTo = function (newX, newY) {
+        if (newX !== null) {
+            this.x = newX;
+        }
+        if (newY !== null) {
+            this.y = newY;
+        }
+        this.trigger("new_state", this);
+    };
+    Movable.prototype.moveToFast = function (newX, newY) {
+        this.x = newX;
+        this.y = newY;
+        this.trigger("new_state", this);
+    };
+    Movable.prototype.isBusy = function () {
+        return this.currentTask !== null;
+    };
+    ;
+    Movable.prototype.makeSureNotBusy = function () {
+        if (this.isBusy()) {
+            console.error("Attempt to use movable while it was busy", this);
+            throw ({ message: "Object is busy - you should use callback", obj: this });
         }
     };
-};
-
-Movable.prototype.update = function(dt) {
-    if(this.currentTask !== null) {
-        this.currentTask(dt);
-    }
-};
-
-Movable.prototype.getWorldPosition = function(storage) {
-    var resultX = this.x;
-    var resultY = this.y;
-    var currentParent = this.parent;
-    while(currentParent !== null) {
-        resultX += currentParent.x;
-        resultY += currentParent.y;
-        currentParent = currentParent.parent;
-    }
-    storage[0] = resultX;
-    storage[1] = resultY;
-};
-
-Movable.prototype.setParent = function(movableParent) {
-    var objWorld = [0,0];
-    if(movableParent === null) {
-        if(this.parent !== null) {
+    Movable.prototype.wait = function (millis, cb) {
+        this.makeSureNotBusy();
+        var timeSpent = 0.0;
+        var self = this;
+        self.currentTask = function (dt) {
+            timeSpent += dt;
+            if (timeSpent > millis) {
+                self.currentTask = null;
+                if (cb) {
+                    cb();
+                }
+            }
+        };
+    };
+    Movable.prototype.moveToOverTime = function (newX, newY, timeToSpend, interpolator, cb) {
+        this.makeSureNotBusy();
+        if (newX === null) {
+            newX = this.x;
+        }
+        if (newY === null) {
+            newY = this.y;
+        }
+        if (typeof interpolator === "undefined") {
+            interpolator = DEFAULT_INTERPOLATOR;
+        }
+        var origX = this.x;
+        var origY = this.y;
+        var timeSpent = 0.0;
+        var self = this;
+        self.currentTask = function (dt) {
+            timeSpent = Math.min(timeToSpend, timeSpent + dt);
+            if (timeSpent === timeToSpend) { // Epsilon issues possibly?
+                self.moveToFast(newX, newY);
+                self.currentTask = null;
+                if (cb) {
+                    cb();
+                }
+            }
+            else {
+                var factor = timeSpent / timeToSpend;
+                self.moveToFast(interpolator(origX, newX, factor), interpolator(origY, newY, factor));
+            }
+        };
+    };
+    Movable.prototype.update = function (dt) {
+        if (this.currentTask !== null) {
+            this.currentTask(dt);
+        }
+    };
+    Movable.prototype.getWorldPosition = function (storage) {
+        var resultX = this.x;
+        var resultY = this.y;
+        var currentParent = this.parent;
+        while (currentParent !== null) {
+            resultX += currentParent.x;
+            resultY += currentParent.y;
+            currentParent = currentParent.parent;
+        }
+        storage[0] = resultX;
+        storage[1] = resultY;
+    };
+    Movable.prototype.setParent = function (movableParent) {
+        var objWorld = [0, 0];
+        if (movableParent === null) {
+            if (this.parent !== null) {
+                this.getWorldPosition(objWorld);
+                this.parent = null;
+                this.moveToFast(objWorld[0], objWorld[1]);
+            }
+        }
+        else {
+            // Parent is being set a non-null movable
             this.getWorldPosition(objWorld);
-            this.parent = null;
-            this.moveToFast(objWorld[0], objWorld[1]);
+            var parentWorld = [0, 0];
+            movableParent.getWorldPosition(parentWorld);
+            this.parent = movableParent;
+            this.moveToFast(objWorld[0] - parentWorld[0], objWorld[1] - parentWorld[1]);
         }
-    } else {
-        // Parent is being set a non-null movable
-        this.getWorldPosition(objWorld);
-        var parentWorld = [0,0];
-        movableParent.getWorldPosition(parentWorld);
-        this.parent = movableParent;
-        this.moveToFast(objWorld[0] - parentWorld[0], objWorld[1] - parentWorld[1]);
-    }
-};
-
-
+    };
+    return Movable;
+}(unobservable_1.Observable));
+exports["default"] = Movable;
 
 
 /***/ }),
 
-/***/ "./src/js/presenters.js":
+/***/ "./src/ts/presenters.ts":
 /*!******************************!*\
-  !*** ./src/js/presenters.js ***!
+  !*** ./src/ts/presenters.ts ***!
   \******************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "clearAll": () => (/* binding */ clearAll),
-/* harmony export */   "presentChallenge": () => (/* binding */ presentChallenge),
-/* harmony export */   "presentStats": () => (/* binding */ presentStats),
-/* harmony export */   "presentWorld": () => (/* binding */ presentWorld),
-/* harmony export */   "presentCodeStatus": () => (/* binding */ presentCodeStatus),
-/* harmony export */   "presentFeedback": () => (/* binding */ presentFeedback)
-/* harmony export */ });
-/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
-/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _lib_riot__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./lib/riot */ "./src/js/lib/riot.js");
-/* harmony import */ var _lib_riot__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_lib_riot__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_2__);
 
-
-
-
-function clearAll($elems) {
-    lodash__WEBPACK_IMPORTED_MODULE_2___default().each($elems, function($elem) {
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.makeDemoFullscreen = exports.presentCodeStatus = exports.presentWorld = exports.presentFeedback = exports.presentChallenge = exports.presentStats = exports.clearAll = void 0;
+var $ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+var riot_1 = __webpack_require__(/*! ./lib/riot */ "./src/ts/lib/riot.ts");
+var _ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+var clearAll = function ($elems) {
+    _.each($elems, function ($elem) {
         $elem.empty();
     });
 };
-
-function setTransformPos(elem, x, y) {
+exports.clearAll = clearAll;
+var setTransformPos = function (elem, x, y) {
     var style = "translate(" + x + "px," + y + "px) translateZ(0)";
     elem.style.transform = style;
+    // @ts-ignore
     elem.style["-ms-transform"] = style;
+    // @ts-ignore
     elem.style["-webkit-transform"] = style;
 };
-
-function updateUserState($user, elem_user, user) {
+var updateUserState = function ($user, elem_user, user) {
     setTransformPos(elem_user, user.worldX, user.worldY);
-    if(user.done) { $user.addClass("leaving"); }
+    if (user.done) {
+        $user.addClass("leaving");
+    }
 };
-
-
-function presentStats($parent, world) {
-
-    var elem_transportedcounter = $parent.find(".transportedcounter").get(0),
-        elem_elapsedtime = $parent.find(".elapsedtime").get(0),
-        elem_transportedpersec = $parent.find(".transportedpersec").get(0),
-        elem_avgwaittime = $parent.find(".avgwaittime").get(0),
-        elem_maxwaittime = $parent.find(".maxwaittime").get(0),
-        elem_movecount = $parent.find(".movecount").get(0);
-
-    world.on("stats_display_changed", function updateStats() {
-        elem_transportedcounter.textContent = world.transportedCounter;
+var presentStats = function ($parent, world) {
+    var elem_transportedcounter = $parent.find(".transportedcounter").get(0), elem_elapsedtime = $parent.find(".elapsedtime").get(0), elem_transportedpersec = $parent.find(".transportedpersec").get(0), elem_avgwaittime = $parent.find(".avgwaittime").get(0), elem_maxwaittime = $parent.find(".maxwaittime").get(0), elem_movecount = $parent.find(".movecount").get(0);
+    world.on("stats_display_changed", function () {
+        elem_transportedcounter.textContent = "" + world.transportedCounter;
         elem_elapsedtime.textContent = world.elapsedTime.toFixed(0) + "秒";
         elem_transportedpersec.textContent = world.transportedPerSec.toPrecision(3);
         elem_avgwaittime.textContent = world.avgWaitTime.toFixed(1) + "秒";
         elem_maxwaittime.textContent = world.maxWaitTime.toFixed(1) + "秒";
-        elem_movecount.textContent = world.moveCount;
+        elem_movecount.textContent = "" + world.moveCount;
     });
     world.trigger("stats_display_changed");
 };
-
-function presentChallenge($parent, challenge, app, world, worldController, challengeNum, challengeTempl) {
-    var $challenge = jquery__WEBPACK_IMPORTED_MODULE_0___default()(riot.render(challengeTempl, {
+exports.presentStats = presentStats;
+var presentChallenge = function ($parent, challenge, app, world, worldController, challengeNum, challengeTempl) {
+    var $challenge = $(riot_1.riot.render(challengeTempl, {
         challenge: challenge,
         num: challengeNum,
         timeScale: worldController.timeScale.toFixed(0) + "x",
         startButtonText: world.challengeEnded ? "<i class='fa fa-repeat'></i> 再開" : (worldController.isPaused ? "スタート" : "一時停止")
     }));
+    // @ts-ignore
     $parent.html($challenge);
-
-    $parent.find(".startstop").on("click", function() {
+    $parent.find(".startstop").on("click", function () {
         app.startStopOrRestart();
     });
-    $parent.find(".timescale_increase").on("click", function(e) {
+    $parent.find(".timescale_increase").on("click", function (e) {
         e.preventDefault();
-        if(worldController.timeScale < 40) {
+        if (worldController.timeScale < 40) {
             var timeScale = Math.round(worldController.timeScale * 1.618);
             worldController.setTimeScale(timeScale);
         }
     });
-    $parent.find(".timescale_decrease").on("click", function(e) {
+    $parent.find(".timescale_decrease").on("click", function (e) {
         e.preventDefault();
         var timeScale = Math.round(worldController.timeScale / 1.618);
         worldController.setTimeScale(timeScale);
     });
 };
-
-function presentFeedback($parent, feedbackTempl, world, title, message, url) {
-    $parent.html(riot.render(feedbackTempl, {title: title, message: message, url: url, paddingTop: world.floors.length * world.floorHeight * 0.2}));
-    if(!url) {
+exports.presentChallenge = presentChallenge;
+var presentFeedback = function ($parent, feedbackTempl, world, title, message, url) {
+    $parent.html(riot_1.riot.render(feedbackTempl, { title: title, message: message, url: url, paddingTop: world.floors.length * world.floorHeight * 0.2 }));
+    if (!url) {
         $parent.find("a").remove();
     }
 };
-
-function presentWorld($world, world, floorTempl, elevatorTempl, elevatorButtonTempl, userTempl) {
+exports.presentFeedback = presentFeedback;
+var presentWorld = function ($world, world, floorTempl, elevatorTempl, elevatorButtonTempl, userTempl) {
     $world.css("height", world.floorHeight * world.floors.length);
-
-    $world.append(lodash__WEBPACK_IMPORTED_MODULE_2___default().map(world.floors, function(f) {
-        var $floor = jquery__WEBPACK_IMPORTED_MODULE_0___default()(riot.render(floorTempl, f));
+    $world.append(_.map(world.floors, function (f) {
+        var $floor = $(riot_1.riot.render(floorTempl, f));
         var $up = $floor.find(".up");
         var $down = $floor.find(".down");
-        f.on("buttonstate_change", function(buttonStates) {
+        f.on("buttonstate_change", function (buttonStates) {
             $up.toggleClass("activated", buttonStates.up !== "");
             $down.toggleClass("activated", buttonStates.down !== "");
         });
-        $up.on("click", function() {
+        $up.on("click", function () {
             f.pressUpButton();
         });
-        $down.on("click", function() {
+        $down.on("click", function () {
             f.pressDownButton();
         });
         return $floor;
     }));
     $world.find(".floor").first().find(".down").addClass("invisible");
     $world.find(".floor").last().find(".up").addClass("invisible");
-
-    function renderElevatorButtons(states) {
+    var renderElevatorButtons = function (states) {
         // This is a rarely executed inner-inner loop, does not need efficiency
-        return lodash__WEBPACK_IMPORTED_MODULE_2___default().map(states, function(b, i) {
-            return riot.render(elevatorButtonTempl, {floorNum: i});
+        return _.map(states, function (b, i) {
+            return riot_1.riot.render(elevatorButtonTempl, { floorNum: i });
         }).join("");
     };
-
-    function setUpElevator(e) {
-        var $elevator = jquery__WEBPACK_IMPORTED_MODULE_0___default()(riot.render(elevatorTempl, {e: e}));
+    var setUpElevator = function (e) {
+        var $elevator = $(riot_1.riot.render(elevatorTempl, { e: e }));
         var elem_elevator = $elevator.get(0);
         $elevator.find(".buttonindicator").html(renderElevatorButtons(e.buttonStates));
-        var $buttons = lodash__WEBPACK_IMPORTED_MODULE_2___default().map($elevator.find(".buttonindicator").children(), function(c) { return jquery__WEBPACK_IMPORTED_MODULE_0___default()(c); });
+        var $buttons = _.map($elevator.find(".buttonindicator").children(), function (c) { return $(c); });
         var elem_floorindicator = $elevator.find(".floorindicator > span").get(0);
-
-        $elevator.on("click", ".buttonpress", function() {
-            e.pressFloorButton(parseInt(jquery__WEBPACK_IMPORTED_MODULE_0___default()(this).text()));
+        $elevator.on("click", ".buttonpress", function () {
+            e.pressFloorButton(parseInt($(this).text()));
         });
-        e.on("new_display_state", function updateElevatorPosition() {
+        e.on("new_display_state", function () {
             setTransformPos(elem_elevator, e.worldX, e.worldY);
         });
-        e.on("new_current_floor", function update_current_floor(floor) {
+        e.on("new_current_floor", function (floor) {
             elem_floorindicator.textContent = floor;
         });
-        e.on("floor_buttons_changed", function update_floor_buttons(states, indexChanged) {
+        e.on("floor_buttons_changed", function (states, indexChanged) {
             $buttons[indexChanged].toggleClass("activated", states[indexChanged]);
         });
-        e.on("indicatorstate_change", function indicatorstate_change(indicatorStates) {
+        e.on("indicatorstate_change", function (indicatorStates) {
             $elevator.find(".up").toggleClass("activated", indicatorStates.up);
             $elevator.find(".down").toggleClass("activated", indicatorStates.down);
         });
@@ -40351,188 +40336,180 @@ function presentWorld($world, world, floorTempl, elevatorTempl, elevatorButtonTe
         e.trigger("new_display_state", e);
         e.trigger("new_current_floor", e.currentFloor);
         return $elevator;
-    }
-
-    $world.append(lodash__WEBPACK_IMPORTED_MODULE_2___default().map(world.elevators, function(e) {
+    };
+    $world.append(_.map(world.elevators, function (e) {
         return setUpElevator(e);
     }));
-
-    world.on("new_user", function(user) {
-        var $user = jquery__WEBPACK_IMPORTED_MODULE_0___default()(riot.render(userTempl, {u: user, state: user.done ? "leaving" : ""}));
+    world.on("new_user", function (user) {
+        var $user = $(riot_1.riot.render(userTempl, { u: user, state: user.done ? "leaving" : "" }));
         var elem_user = $user.get(0);
-
-        user.on("new_display_state", function() { updateUserState($user, elem_user, user); })
-        user.on("removed", function() {
+        user.on("new_display_state", function () { updateUserState($user, elem_user, user); });
+        user.on("removed", function () {
             $user.remove();
         });
         $world.append($user);
     });
 };
-
-
-function presentCodeStatus($parent, templ, error) {
+exports.presentWorld = presentWorld;
+var presentCodeStatus = function ($parent, templ, error) {
     console.log(error);
     var errorDisplay = error ? "block" : "none";
     var successDisplay = error ? "none" : "block";
     var errorMessage = error;
-    if(error && error.stack) {
+    if (error && error.stack) {
         errorMessage = error.stack;
         errorMessage = errorMessage.replace(/\n/g, "<br>");
     }
-    var status = riot.render(templ, {errorMessage: errorMessage, errorDisplay: errorDisplay, successDisplay: successDisplay});
+    var status = riot_1.riot.render(templ, { errorMessage: errorMessage, errorDisplay: errorDisplay, successDisplay: successDisplay });
     $parent.html(status);
 };
-
-function makeDemoFullscreen() {
-    jquery__WEBPACK_IMPORTED_MODULE_0___default()("body .container > *").not(".world").css("visibility", "hidden");
-    jquery__WEBPACK_IMPORTED_MODULE_0___default()("html, body, body .container, .world").css({width: "100%", margin: "0", "padding": 0});
+exports.presentCodeStatus = presentCodeStatus;
+var makeDemoFullscreen = function () {
+    $("body .container > *").not(".world").css("visibility", "hidden");
+    $("html, body, body .container, .world").css({ width: "100%", margin: "0", "padding": 0 });
 };
-
-
+exports.makeDemoFullscreen = makeDemoFullscreen;
 
 
 /***/ }),
 
-/***/ "./src/js/user.js":
+/***/ "./src/ts/user.ts":
 /*!************************!*\
-  !*** ./src/js/user.js ***!
+  !*** ./src/ts/user.ts ***!
   \************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ User)
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/js/base.js");
-/* harmony import */ var _movable__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./movable */ "./src/js/movable.js");
 
-
-
-
-function User(weight) {
-    (0,_base__WEBPACK_IMPORTED_MODULE_0__.newGuard)(this, User);
-    _movable__WEBPACK_IMPORTED_MODULE_1__["default"].call(this);
-    var user = this;
-    user.weight = weight;
-    user.currentFloor = 0;
-    user.destinationFloor = 0;
-    user.done = false;
-    user.removeMe = false;
-};
-User.prototype = Object.create(_movable__WEBPACK_IMPORTED_MODULE_1__["default"].prototype);
-
-
-User.prototype.appearOnFloor = function(floor, destinationFloorNum) {
-    var floorPosY = floor.getSpawnPosY();
-    this.currentFloor = floor.level;
-    this.destinationFloor = destinationFloorNum;
-    this.moveTo(null, floorPosY);
-    this.pressFloorButton(floor);
-};
-
-User.prototype.pressFloorButton = function(floor) {
-    if(this.destinationFloor < this.currentFloor) {
-        floor.pressDownButton();
-    } else {
-        floor.pressUpButton();
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var movable_1 = __webpack_require__(/*! ./movable */ "./src/ts/movable.ts");
+var movable_2 = __webpack_require__(/*! ./movable */ "./src/ts/movable.ts");
+var User = /** @class */ (function (_super) {
+    __extends(User, _super);
+    function User(weight) {
+        var _this = _super.call(this) || this;
+        _this.spawnTimestamp = 0.0;
+        _this.currentFloor = 0;
+        _this.destinationFloor = 0;
+        _this.done = false;
+        _this.removeMe = false;
+        _this.displayType = "female";
+        _this.exitAvailableHandler = function (floorNum, elevator) { };
+        _this.weight = weight;
+        return _this;
     }
-};
-
-User.prototype.handleExit = function(floorNum, elevator) {
-    if(elevator.currentFloor === this.destinationFloor) {
-        elevator.userExiting(this);
-        this.currentFloor = elevator.currentFloor;
-        this.setParent(null);
-        var destination = this.x + 100;
-        this.done = true;
-        this.trigger("exited_elevator", elevator);
-        this.trigger("new_state");
-        this.trigger("new_display_state");
-        var self = this;
-        this.moveToOverTime(destination, null, 1 + Math.random()*0.5, _movable__WEBPACK_IMPORTED_MODULE_1__.linearInterpolate, function lastMove() {
-            self.removeMe = true;
-            self.trigger("removed");
-            self.off("*");
-        });
-
-        elevator.off("exit_available", this.exitAvailableHandler);
-    }
-};
-
-User.prototype.elevatorAvailable = function(elevator, floor) {
-    if(this.done || this.parent !== null || this.isBusy()) {
-        return;
-    }
-
-    if(!elevator.isSuitableForTravelBetween(this.currentFloor, this.destinationFloor)) {
-        // Not suitable for travel - don't use this elevator
-        return;
-    }
-
-    var pos = elevator.userEntering(this);
-    if(pos) {
-        // Success
-        this.setParent(elevator);
-        this.trigger("entered_elevator", elevator);
-        var self = this;
-        this.moveToOverTime(pos[0], pos[1], 1, undefined, function() {
-            elevator.pressFloorButton(self.destinationFloor);
-        });
-        this.exitAvailableHandler = function (floorNum, elevator) { self.handleExit(elevator.currentFloor, elevator); };
-        elevator.on("exit_available", this.exitAvailableHandler);
-    } else {
+    User.prototype.appearOnFloor = function (floor, destinationFloorNum) {
+        var floorPosY = floor.getSpawnPosY();
+        this.currentFloor = floor.level;
+        this.destinationFloor = destinationFloorNum;
+        this.moveTo(null, floorPosY);
         this.pressFloorButton(floor);
-    }
-};
-
-
+    };
+    User.prototype.pressFloorButton = function (floor) {
+        if (this.destinationFloor < this.currentFloor) {
+            floor.pressDownButton();
+        }
+        else {
+            floor.pressUpButton();
+        }
+    };
+    User.prototype.handleExit = function (floorNum, elevator) {
+        if (elevator.currentFloor === this.destinationFloor) {
+            elevator.userExiting(this);
+            this.currentFloor = elevator.currentFloor;
+            this.setParent(null);
+            var destination = this.x + 100;
+            this.done = true;
+            this.trigger("exited_elevator", elevator);
+            this.trigger("new_state");
+            this.trigger("new_display_state");
+            var self_1 = this;
+            this.moveToOverTime(destination, null, 1 + Math.random() * 0.5, movable_2.linearInterpolate, function () {
+                self_1.removeMe = true;
+                self_1.trigger("removed");
+                self_1.off("*");
+            });
+            elevator.off("exit_available", this.exitAvailableHandler);
+        }
+    };
+    User.prototype.elevatorAvailable = function (elevator, floor) {
+        if (this.done || this.parent !== null || this.isBusy()) {
+            return;
+        }
+        if (!elevator.isSuitableForTravelBetween(this.currentFloor, this.destinationFloor)) {
+            // Not suitable for travel - don't use this elevator
+            return;
+        }
+        var pos = elevator.userEntering(this);
+        if (pos) {
+            // Success
+            this.setParent(elevator);
+            this.trigger("entered_elevator", elevator);
+            var self_2 = this;
+            this.moveToOverTime(pos[0], pos[1], 1, undefined, function () {
+                elevator.pressFloorButton(self_2.destinationFloor);
+            });
+            this.exitAvailableHandler = function (floorNum, elevator) { self_2.handleExit(elevator.currentFloor, elevator); };
+            elevator.on("exit_available", this.exitAvailableHandler);
+        }
+        else {
+            this.pressFloorButton(floor);
+        }
+    };
+    return User;
+}(movable_1.default));
+exports["default"] = User;
 
 
 /***/ }),
 
-/***/ "./src/js/world.js":
+/***/ "./src/ts/world.ts":
 /*!*************************!*\
-  !*** ./src/js/world.js ***!
+  !*** ./src/ts/world.ts ***!
   \*************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "createWorldCreator": () => (/* binding */ createWorldCreator),
-/* harmony export */   "createWorldController": () => (/* binding */ createWorldController)
-/* harmony export */ });
-/* harmony import */ var _lib_riot__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./lib/riot */ "./src/js/lib/riot.js");
-/* harmony import */ var _lib_riot__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_lib_riot__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _floor__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./floor */ "./src/js/floor.js");
-/* harmony import */ var _interfaces__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./interfaces */ "./src/js/interfaces.js");
-/* harmony import */ var _elevator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./elevator */ "./src/js/elevator.js");
-/* harmony import */ var _user__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./user */ "./src/js/user.js");
 
-
-
-
-
-
-
-var createWorldCreator = function() {
-    var creator = {};
-
-    creator.createFloors = function(floorCount, floorHeight, errorHandler) {
-        var floors = _.map(_.range(floorCount), function(e, i) {
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.createWorldController = exports.createWorldCreator = exports.WorldCreator = void 0;
+var riot_1 = __webpack_require__(/*! ./lib/riot */ "./src/ts/lib/riot.ts");
+var _ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+var floor_1 = __webpack_require__(/*! ./floor */ "./src/ts/floor.ts");
+var interfaces_1 = __webpack_require__(/*! ./interfaces */ "./src/ts/interfaces.ts");
+var elevator_1 = __webpack_require__(/*! ./elevator */ "./src/ts/elevator.ts");
+var user_1 = __webpack_require__(/*! ./user */ "./src/ts/user.ts");
+var WorldCreator = /** @class */ (function () {
+    function WorldCreator() {
+    }
+    WorldCreator.prototype.createFloors = function (floorCount, floorHeight, errorHandler) {
+        var floors = _.map(_.range(floorCount), function (e, i) {
             var yPos = (floorCount - 1 - i) * floorHeight;
-            var floor = (0,_floor__WEBPACK_IMPORTED_MODULE_1__.asFloor)({}, i, yPos, errorHandler);
+            var floor = (0, floor_1.asFloor)({}, i, yPos, errorHandler);
             return floor;
         });
         return floors;
     };
-    creator.createElevators = function(elevatorCount, floorCount, floorHeight, elevatorCapacities) {
+    WorldCreator.prototype.createElevators = function (elevatorCount, floorCount, floorHeight, elevatorCapacities) {
         elevatorCapacities = elevatorCapacities || [4];
         var currentX = 200.0;
-        var elevators = _.map(_.range(elevatorCount), function(e, i) {
-            var elevator = new _elevator__WEBPACK_IMPORTED_MODULE_3__["default"](2.6, floorCount, floorHeight, elevatorCapacities[i%elevatorCapacities.length]);
-
+        var elevators = _.map(_.range(elevatorCount), function (e, i) {
+            var elevator = new elevator_1.default(2.6, floorCount, floorHeight, elevatorCapacities[i % elevatorCapacities.length]);
             // Move to right x position
             elevator.moveTo(currentX, null);
             elevator.setFloorPosition(0);
@@ -40542,54 +40519,54 @@ var createWorldCreator = function() {
         });
         return elevators;
     };
-
-    creator.createRandomUser = function() {
+    WorldCreator.prototype.createRandomUser = function () {
         var weight = _.random(55, 100);
-        var user = new _user__WEBPACK_IMPORTED_MODULE_4__["default"](weight);
-        if(_.random(40) === 0) {
+        var user = new user_1.default(weight);
+        if (_.random(40) === 0) {
             user.displayType = "child";
-        } else if(_.random(1) === 0) {
+        }
+        else if (_.random(1) === 0) {
             user.displayType = "female";
-        } else {
+        }
+        else {
             user.displayType = "male";
         }
         return user;
     };
-
-    creator.spawnUserRandomly = function(floorCount, floorHeight, floors) {
-        var user = creator.createRandomUser();
-        user.moveTo(105+_.random(40), 0);
+    WorldCreator.prototype.spawnUserRandomly = function (floorCount, floorHeight, floors) {
+        var user = this.createRandomUser();
+        user.moveTo(105 + _.random(40), 0);
         var currentFloor = _.random(1) === 0 ? 0 : _.random(floorCount - 1);
         var destinationFloor;
-        if(currentFloor === 0) {
+        if (currentFloor === 0) {
             // Definitely going up
             destinationFloor = _.random(1, floorCount - 1);
-        } else {
+        }
+        else {
             // Usually going down, but sometimes not
-            if(_.random(10) === 0) {
+            if (_.random(10) === 0) {
                 destinationFloor = (currentFloor + _.random(1, floorCount - 1)) % floorCount;
-            } else {
+            }
+            else {
                 destinationFloor = 0;
             }
         }
         user.appearOnFloor(floors[currentFloor], destinationFloor);
         return user;
     };
-
-    creator.createWorld = function(options) {
+    WorldCreator.prototype.createWorld = function (options) {
+        var _this = this;
         console.log("Creating world with options", options);
         var defaultOptions = { floorHeight: 50, floorCount: 4, elevatorCount: 2, spawnRate: 0.5 };
-        options = _.defaults(_.clone(options), defaultOptions);
-        var world = {floorHeight: options.floorHeight, transportedCounter: 0};
-        riot.observable(world);
-
-        var handleUserCodeError = function(e) {
+        var completeOptions = _.defaults(_.clone(options), defaultOptions);
+        var world = { floorHeight: completeOptions.floorHeight, transportedCounter: 0 };
+        riot_1.riot.observable(world);
+        var handleUserCodeError = function (e) {
             world.trigger("usercode_error", e);
-        }
-
-        world.floors = creator.createFloors(options.floorCount, world.floorHeight, handleUserCodeError);
-        world.elevators = creator.createElevators(options.elevatorCount, options.floorCount, world.floorHeight, options.elevatorCapacities);
-        world.elevatorInterfaces = _.map(world.elevators, function(e) { return (0,_interfaces__WEBPACK_IMPORTED_MODULE_2__.asElevatorInterface)({}, e, options.floorCount, handleUserCodeError); });
+        };
+        world.floors = this.createFloors(completeOptions.floorCount, world.floorHeight, handleUserCodeError);
+        world.elevators = this.createElevators(completeOptions.elevatorCount, completeOptions.floorCount, world.floorHeight, completeOptions.elevatorCapacities);
+        world.elevatorInterfaces = _.map(world.elevators, function (e) { return (0, interfaces_1.asElevatorInterface)({}, e, completeOptions.floorCount, handleUserCodeError); });
         world.users = [];
         world.transportedCounter = 0;
         world.transportedPerSec = 0.0;
@@ -40598,20 +40575,18 @@ var createWorldCreator = function() {
         world.maxWaitTime = 0.0;
         world.avgWaitTime = 0.0;
         world.challengeEnded = false;
-
-        var recalculateStats = function() {
+        var recalculateStats = function () {
             world.transportedPerSec = world.transportedCounter / world.elapsedTime;
             // TODO: Optimize this loop?
-            world.moveCount = _.reduce(world.elevators, function(sum, elevator) { return sum+elevator.moveCount; }, 0);
+            world.moveCount = _.reduce(world.elevators, function (sum, elevator) { return sum + elevator.moveCount; }, 0);
             world.trigger("stats_changed");
         };
-
-        var registerUser = function(user) {
+        var registerUser = function (user) {
             world.users.push(user);
             user.updateDisplayPosition(true);
             user.spawnTimestamp = world.elapsedTime;
             world.trigger("new_user", user);
-            user.on("exited_elevator", function() {
+            user.on("exited_elevator", function () {
                 world.transportedCounter++;
                 world.maxWaitTime = Math.max(world.maxWaitTime, world.elapsedTime - user.spawnTimestamp);
                 world.avgWaitTime = (world.avgWaitTime * (world.transportedCounter - 1) + (world.elapsedTime - user.spawnTimestamp)) / world.transportedCounter;
@@ -40619,40 +40594,36 @@ var createWorldCreator = function() {
             });
             user.updateDisplayPosition(true);
         };
-
-        var handleElevAvailability = function(elevator) {
+        var handleElevAvailability = function (elevator) {
             // Use regular loops for memory/performance reasons
             // Notify floors first because overflowing users
             // will press buttons again.
-            for(var i=0, len=world.floors.length; i<len; ++i) {
+            for (var i = 0, len = world.floors.length; i < len; ++i) {
                 var floor = world.floors[i];
-                if(elevator.currentFloor === i) {
+                if (elevator.currentFloor === i) {
                     floor.elevatorAvailable(elevator);
                 }
             }
-            for(var users=world.users, i=0, len=users.length; i < len; ++i) {
+            for (var users = world.users, i = 0, len = users.length; i < len; ++i) {
                 var user = users[i];
-                if(user.currentFloor === elevator.currentFloor) {
+                if (user.currentFloor === elevator.currentFloor) {
                     user.elevatorAvailable(elevator, world.floors[elevator.currentFloor]);
                 }
             }
         };
-
         // Bind them all together
-        for(var i=0; i < world.elevators.length; ++i) {
+        for (var i = 0; i < world.elevators.length; ++i) {
             world.elevators[i].on("entrance_available", handleElevAvailability);
         }
-
-        var handleButtonRepressing = function(eventName, floor) {
+        var handleButtonRepressing = function (eventName, floor) {
             // Need randomize iteration order or we'll tend to fill upp first elevator
-            for(var i=0, len=world.elevators.length, offset=_.random(len-1); i < len; ++i) {
+            for (var i = 0, len = world.elevators.length, offset = _.random(len - 1); i < len; ++i) {
                 var elevIndex = (i + offset) % len;
                 var elevator = world.elevators[elevIndex];
-                if( eventName === "up_button_pressed" && elevator.goingUpIndicator ||
+                if (eventName === "up_button_pressed" && elevator.goingUpIndicator ||
                     eventName === "down_button_pressed" && elevator.goingDownIndicator) {
-
                     // Elevator is heading in correct direction, check for suitability
-                    if(elevator.currentFloor === floor.level && elevator.isOnAFloor() && !elevator.isMoving && !elevator.isFull()) {
+                    if (elevator.currentFloor === floor.level && elevator.isOnAFloor() && !elevator.isMoving && !elevator.isFull()) {
                         // Potentially suitable to get into
                         // Use the interface queue functionality to queue up this action
                         world.elevatorInterfaces[elevIndex].goToFloor(floor.level, true);
@@ -40660,109 +40631,105 @@ var createWorldCreator = function() {
                     }
                 }
             }
-        }
-
+        };
         // This will cause elevators to "re-arrive" at floors if someone presses an
         // appropriate button on the floor before the elevator has left.
-        for(var i=0; i<world.floors.length; ++i) {
+        for (var i = 0; i < world.floors.length; ++i) {
             world.floors[i].on("up_button_pressed down_button_pressed", handleButtonRepressing);
-        };
-
-        var elapsedSinceSpawn = 1.001/options.spawnRate;
+        }
+        ;
+        var elapsedSinceSpawn = 1.001 / completeOptions.spawnRate;
         var elapsedSinceStatsUpdate = 0.0;
-
         // Main update function
-        world.update = function(dt) {
+        world.update = function (dt) {
             world.elapsedTime += dt;
             elapsedSinceSpawn += dt;
             elapsedSinceStatsUpdate += dt;
-            while(elapsedSinceSpawn > 1.0/options.spawnRate) {
-                elapsedSinceSpawn -= 1.0/options.spawnRate;
-                registerUser(creator.spawnUserRandomly(options.floorCount, world.floorHeight, world.floors));
+            while (elapsedSinceSpawn > 1.0 / completeOptions.spawnRate) {
+                elapsedSinceSpawn -= 1.0 / completeOptions.spawnRate;
+                registerUser(_this.spawnUserRandomly(completeOptions.floorCount, world.floorHeight, world.floors));
             }
-
             // Use regular for loops for performance and memory friendlyness
-            for(var i=0, len=world.elevators.length; i < len; ++i) {
+            for (var i = 0, len = world.elevators.length; i < len; ++i) {
                 var e = world.elevators[i];
                 e.update(dt);
                 e.updateElevatorMovement(dt);
             }
-            for(var users=world.users, i=0, len=users.length; i < len; ++i) {
+            for (var users = world.users, i = 0, len = users.length; i < len; ++i) {
                 var u = users[i];
                 u.update(dt);
                 world.maxWaitTime = Math.max(world.maxWaitTime, world.elapsedTime - u.spawnTimestamp);
-            };
-
-            for(var users=world.users, i=world.users.length-1; i>=0; i--) {
+            }
+            ;
+            for (var users = world.users, i = world.users.length - 1; i >= 0; i--) {
                 var u = users[i];
-                if(u.removeMe) {
+                if (u.removeMe) {
                     users.splice(i, 1);
                 }
             }
-            
             recalculateStats();
         };
-
-        world.updateDisplayPositions = function() {
-            for(var i=0, len=world.elevators.length; i < len; ++i) {
+        world.updateDisplayPositions = function () {
+            for (var i = 0, len = world.elevators.length; i < len; ++i) {
                 world.elevators[i].updateDisplayPosition();
             }
-            for(var users=world.users, i=0, len=users.length; i < len; ++i) {
+            for (var users = world.users, i = 0, len = users.length; i < len; ++i) {
                 users[i].updateDisplayPosition();
             }
         };
-
-
-        world.unWind = function() {
+        world.unWind = function () {
             console.log("Unwinding", world);
-            _.each(world.elevators.concat(world.elevatorInterfaces).concat(world.users).concat(world.floors).concat([world]), function(obj) {
+            _.each(world.elevators.concat(world.elevatorInterfaces).concat(world.users).concat(world.floors).concat([world]), function (obj) {
                 obj.off("*");
             });
             world.challengeEnded = true;
             world.elevators = world.elevatorInterfaces = world.users = world.floors = [];
         };
-
-        world.init = function() {
+        world.init = function () {
             // Checking the floor queue of the elevators triggers the idle event here
-            for(var i=0; i < world.elevatorInterfaces.length; ++i) {
+            for (var i = 0; i < world.elevatorInterfaces.length; ++i) {
                 world.elevatorInterfaces[i].checkDestinationQueue();
             }
         };
-
         return world;
     };
-
-    return creator;
-};
-
-
-var createWorldController = function(dtMax) {
-    var controller = riot.observable({});
+    return WorldCreator;
+}());
+exports.WorldCreator = WorldCreator;
+var createWorldCreator = function () { return new WorldCreator(); };
+exports.createWorldCreator = createWorldCreator;
+var createWorldController = function (dtMax) {
+    var controller = riot_1.riot.observable({});
     controller.timeScale = 1.0;
     controller.isPaused = true;
-    controller.start = function(world, codeObj, animationFrameRequester, autoStart) {
+    controller.start = function (world, codeObj, animationFrameRequester, autoStart) {
         controller.isPaused = true;
         var lastT = null;
         var firstUpdate = true;
         world.on("usercode_error", controller.handleUserCodeError);
-        var updater = function(t) {
-            if(!controller.isPaused && !world.challengeEnded && lastT !== null) {
-                if(firstUpdate) {
+        var updater = function (t) {
+            if (!controller.isPaused && !world.challengeEnded && lastT !== null) {
+                if (firstUpdate) {
                     firstUpdate = false;
                     // This logic prevents infite loops in usercode from breaking the page permanently - don't evaluate user code until game is unpaused.
                     try {
                         codeObj.init(world.elevatorInterfaces, world.floors);
                         world.init();
-                    } catch(e) { controller.handleUserCodeError(e); }
+                    }
+                    catch (e) {
+                        controller.handleUserCodeError(e);
+                    }
                 }
-
                 var dt = (t - lastT);
                 var scaledDt = dt * 0.001 * controller.timeScale;
                 scaledDt = Math.min(scaledDt, dtMax * 3 * controller.timeScale); // Limit to prevent unhealthy substepping
                 try {
                     codeObj.update(scaledDt, world.elevatorInterfaces, world.floors);
-                } catch(e) { controller.handleUserCodeError(e); }
-                while(scaledDt > 0.0 && !world.challengeEnded) {
+                }
+                catch (e) {
+                    controller.handleUserCodeError(e);
+                }
+                while (scaledDt > 0.0 && !world.challengeEnded) {
                     var thisDt = Math.min(dtMax, scaledDt);
                     world.update(thisDt);
                     scaledDt -= dtMax;
@@ -40771,35 +40738,31 @@ var createWorldController = function(dtMax) {
                 world.trigger("stats_display_changed"); // TODO: Trigger less often for performance reasons etc
             }
             lastT = t;
-            if(!world.challengeEnded) {
+            if (!world.challengeEnded) {
                 animationFrameRequester(updater);
             }
         };
-        if(autoStart) {
+        if (autoStart) {
             controller.setPaused(false);
         }
         animationFrameRequester(updater);
     };
-
-    controller.handleUserCodeError = function(e) {
+    controller.handleUserCodeError = function (e) {
         controller.setPaused(true);
         console.log("Usercode error on update", e);
         controller.trigger("usercode_error", e);
     };
-
-    controller.setPaused = function(paused) {
+    controller.setPaused = function (paused) {
         controller.isPaused = paused;
         controller.trigger("timescale_changed");
     };
-    controller.setTimeScale = function(timeScale) {
+    controller.setTimeScale = function (timeScale) {
         controller.timeScale = timeScale;
         controller.trigger("timescale_changed");
     };
-
     return controller;
 };
-
-
+exports.createWorldController = createWorldController;
 
 
 /***/ })
@@ -40834,30 +40797,6 @@ var createWorldController = function(dtMax) {
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/global */
 /******/ 	(() => {
 /******/ 		__webpack_require__.g = (function() {
@@ -40868,22 +40807,6 @@ var createWorldController = function(dtMax) {
 /******/ 				if (typeof window === 'object') return window;
 /******/ 			}
 /******/ 		})();
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/make namespace object */
-/******/ 	(() => {
-/******/ 		// define __esModule on exports
-/******/ 		__webpack_require__.r = (exports) => {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 		};
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/node module decorator */
@@ -40900,42 +40823,25 @@ var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be in strict mode.
 (() => {
 "use strict";
+var exports = __webpack_exports__;
 /*!***********************!*\
-  !*** ./src/js/app.js ***!
+  !*** ./src/ts/app.ts ***!
   \***********************/
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
-/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var codemirror__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! codemirror */ "./node_modules/codemirror/lib/codemirror.js");
-/* harmony import */ var codemirror__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(codemirror__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var codemirror_addon_edit_closebrackets__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! codemirror/addon/edit/closebrackets */ "./node_modules/codemirror/addon/edit/closebrackets.js");
-/* harmony import */ var codemirror_addon_edit_closebrackets__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(codemirror_addon_edit_closebrackets__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var codemirror_mode_javascript_javascript__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! codemirror/mode/javascript/javascript */ "./node_modules/codemirror/mode/javascript/javascript.js");
-/* harmony import */ var codemirror_mode_javascript_javascript__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(codemirror_mode_javascript_javascript__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _lib_riot__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./lib/riot */ "./src/js/lib/riot.js");
-/* harmony import */ var _lib_riot__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_lib_riot__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./base */ "./src/js/base.js");
-/* harmony import */ var _world__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./world */ "./src/js/world.js");
-/* harmony import */ var _challenges__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./challenges */ "./src/js/challenges.js");
-/* harmony import */ var _presenters__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./presenters */ "./src/js/presenters.js");
 
-
-
-
-
-
-
-
-
-
-
-
-var createEditor = function() {
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var $ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+var CodeMirror = __webpack_require__(/*! codemirror */ "./node_modules/codemirror/lib/codemirror.js");
+__webpack_require__(/*! codemirror/addon/edit/closebrackets */ "./node_modules/codemirror/addon/edit/closebrackets.js");
+__webpack_require__(/*! codemirror/mode/javascript/javascript */ "./node_modules/codemirror/mode/javascript/javascript.js");
+var riot_1 = __webpack_require__(/*! ./lib/riot */ "./src/ts/lib/riot.ts");
+var _ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+var base_1 = __webpack_require__(/*! ./base */ "./src/ts/base.ts");
+var world_1 = __webpack_require__(/*! ./world */ "./src/ts/world.ts");
+var challenges_1 = __webpack_require__(/*! ./challenges */ "./src/ts/challenges.ts");
+var presenters_1 = __webpack_require__(/*! ./presenters */ "./src/ts/presenters.ts");
+var createEditor = function () {
     var lsKey = "elevatorCrushCode_v5";
-
-    var cm = codemirror__WEBPACK_IMPORTED_MODULE_1___default().fromTextArea(document.getElementById("code"), {
+    var cm = CodeMirror.fromTextArea(document.getElementById("code"), {
         lineNumbers: true,
         indentUnit: 4,
         indentWithTabs: false,
@@ -40944,125 +40850,107 @@ var createEditor = function() {
         autoCloseBrackets: true,
         extraKeys: {
             // the following Tab key mapping is from http://codemirror.net/doc/manual.html#keymaps
-            Tab: function(cm) {
+            Tab: function (cm) {
                 var spaces = new Array(cm.getOption("indentUnit") + 1).join(" ");
                 cm.replaceSelection(spaces);
             }
         }
     });
-
     // reindent on paste (adapted from https://github.com/ahuth/brackets-paste-and-indent/blob/master/main.js)
-    cm.on("change", function(codeMirror, change) {
-        if(change.origin !== "paste") {
+    cm.on("change", function (codeMirror, change) {
+        if (change.origin !== "paste") {
             return;
         }
-
         var lineFrom = change.from.line;
         var lineTo = change.from.line + change.text.length;
-
-        function reindentLines(codeMirror, lineFrom, lineTo) {
-            codeMirror.operation(function() {
-                codeMirror.eachLine(lineFrom, lineTo, function(lineHandle) {
-                    codeMirror.indentLine(lineHandle.lineNo(), "smart");
+        var reindentLines = function (codeMirror, lineFrom, lineTo) {
+            codeMirror.operation(function () {
+                codeMirror.eachLine(lineFrom, lineTo, function (lineHandle) {
+                    codeMirror.indentLine(codeMirror.getLineNumber(lineHandle), "smart");
                 });
             });
-        }
-
+        };
         reindentLines(codeMirror, lineFrom, lineTo);
     });
-
-    var reset = function() {
-        cm.setValue(jquery__WEBPACK_IMPORTED_MODULE_0___default()("#default-elev-implementation").text().trim());
+    var reset = function () {
+        cm.setValue($("#default-elev-implementation").text().trim());
     };
-    var saveCode = function() {
+    var saveCode = function () {
         localStorage.setItem(lsKey, cm.getValue());
-        jquery__WEBPACK_IMPORTED_MODULE_0___default()("#save_message").text("コードを保存しました： " + new Date().toTimeString());
+        $("#save_message").text("コードを保存しました： " + new Date().toTimeString());
         returnObj.trigger("change");
     };
-
     var existingCode = localStorage.getItem(lsKey);
-    if(existingCode) {
+    if (existingCode) {
         cm.setValue(existingCode);
-    } else {
+    }
+    else {
         reset();
     }
-
-    jquery__WEBPACK_IMPORTED_MODULE_0___default()("#button_save").click(function() {
+    $("#button_save").on("click", function () {
         saveCode();
         cm.focus();
     });
-
-    jquery__WEBPACK_IMPORTED_MODULE_0___default()("#button_reset").click(function() {
-        if(confirm("Do you really want to reset to the default implementation?")) {
+    $("#button_reset").on("click", function () {
+        if (confirm("デフォルトのプログラムに戻します。よろしいですか？")) {
             localStorage.setItem("develevateBackupCode", cm.getValue());
             reset();
         }
         cm.focus();
     });
-
-    jquery__WEBPACK_IMPORTED_MODULE_0___default()("#button_resetundo").click(function() {
-        if(confirm("Do you want to bring back the code as before the last reset?")) {
+    $("#button_resetundo").on("click", function () {
+        if (confirm("リセット前の状態に戻しますか？")) {
             cm.setValue(localStorage.getItem("develevateBackupCode") || "");
         }
         cm.focus();
     });
-
-    var returnObj = riot.observable({});
-    var autoSaver = lodash__WEBPACK_IMPORTED_MODULE_5___default().debounce(saveCode, 1000);
-    cm.on("change", function() {
+    var returnObj = riot_1.riot.observable({});
+    var autoSaver = _.debounce(saveCode, 1000);
+    cm.on("change", function () {
         autoSaver();
     });
-
-    returnObj.getCodeObj = function() {
+    returnObj.getCodeObj = function () {
         console.log("Getting code...");
         var code = cm.getValue();
         var obj;
         try {
-            obj = (0,_base__WEBPACK_IMPORTED_MODULE_6__.getCodeObjFromCode)(code);
+            obj = (0, base_1.getCodeObjFromCode)(code);
             returnObj.trigger("code_success");
-        } catch(e) {
+        }
+        catch (e) {
             returnObj.trigger("usercode_error", e);
             return null;
         }
         return obj;
     };
-    returnObj.setCode = function(code) {
+    returnObj.setCode = function (code) {
         cm.setValue(code);
     };
-    returnObj.getCode = function() {
+    returnObj.getCode = function () {
         return cm.getValue();
-    }
-    returnObj.setDevTestCode = function() {
-        cm.setValue(jquery__WEBPACK_IMPORTED_MODULE_0___default()("#devtest-elev-implementation").text().trim());
-    }
-
-    jquery__WEBPACK_IMPORTED_MODULE_0___default()("#button_apply").click(function() {
+    };
+    returnObj.setDevTestCode = function () {
+        cm.setValue($("#devtest-elev-implementation").text().trim());
+    };
+    $("#button_apply").on("click", function () {
         returnObj.trigger("apply_code");
     });
     return returnObj;
 };
-
-
-var createParamsUrl = function(current, overrides) {
-    return "#" + lodash__WEBPACK_IMPORTED_MODULE_5___default().map(lodash__WEBPACK_IMPORTED_MODULE_5___default().merge(current, overrides), function(val, key) {
+var createParamsUrl = function (current, overrides) {
+    return "#" + _.map(_.merge(current, overrides), function (val, key) {
         return key + "=" + val;
     }).join(",");
 };
-
-
-
-jquery__WEBPACK_IMPORTED_MODULE_0___default()(function() {
+$(function () {
     var tsKey = "elevatorTimeScale";
     var editor = createEditor();
-
     var params = {};
-
-    var $world = jquery__WEBPACK_IMPORTED_MODULE_0___default()(".innerworld");
-    var $stats = jquery__WEBPACK_IMPORTED_MODULE_0___default()(".statscontainer");
-    var $feedback = jquery__WEBPACK_IMPORTED_MODULE_0___default()(".feedbackcontainer");
-    var $challenge = jquery__WEBPACK_IMPORTED_MODULE_0___default()(".challenge");
-    var $codestatus = jquery__WEBPACK_IMPORTED_MODULE_0___default()(".codestatus");
-
+    var $world = $(".innerworld");
+    var $stats = $(".statscontainer");
+    var $feedback = $(".feedbackcontainer");
+    var $challenge = $(".challenge");
+    var $codestatus = $(".codestatus");
     var floorTempl = document.getElementById("floor-template").innerHTML.trim();
     var elevatorTempl = document.getElementById("elevator-template").innerHTML.trim();
     var elevatorButtonTempl = document.getElementById("elevatorbutton-template").innerHTML.trim();
@@ -41070,76 +40958,67 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()(function() {
     var challengeTempl = document.getElementById("challenge-template").innerHTML.trim();
     var feedbackTempl = document.getElementById("feedback-template").innerHTML.trim();
     var codeStatusTempl = document.getElementById("codestatus-template").innerHTML.trim();
-
-    var app = riot.observable({});
-    app.worldController = (0,_world__WEBPACK_IMPORTED_MODULE_7__.createWorldController)(1.0 / 60.0);
-    app.worldController.on("usercode_error", function(e) {
+    var app = riot_1.riot.observable({});
+    app.worldController = (0, world_1.createWorldController)(1.0 / 60.0);
+    app.worldController.on("usercode_error", function (e) {
         console.log("World raised code error", e);
         editor.trigger("usercode_error", e);
     });
-
     console.log(app.worldController);
-    app.worldCreator = (0,_world__WEBPACK_IMPORTED_MODULE_7__.createWorldCreator)();
-    app.world = undefined;
-
+    app.worldCreator = (0, world_1.createWorldCreator)();
     app.currentChallengeIndex = 0;
-
-    app.startStopOrRestart = function() {
-        if(app.world.challengeEnded) {
+    app.startStopOrRestart = function () {
+        if (app.world.challengeEnded) {
             app.startChallenge(app.currentChallengeIndex);
-        } else {
+        }
+        else {
             app.worldController.setPaused(!app.worldController.isPaused);
         }
     };
-
-    app.startChallenge = function(challengeIndex, autoStart) {
-        if(typeof app.world !== "undefined") {
+    app.startChallenge = function (challengeIndex, autoStart) {
+        if (typeof app.world !== "undefined") {
             app.world.unWind();
             // TODO: Investigate if memory leaks happen here
         }
         app.currentChallengeIndex = challengeIndex;
-        app.world = app.worldCreator.createWorld(_challenges__WEBPACK_IMPORTED_MODULE_8__.challenges[challengeIndex].options);
+        app.world = app.worldCreator.createWorld(challenges_1.challenges[challengeIndex].options);
         window.world = app.world;
-
-        (0,_presenters__WEBPACK_IMPORTED_MODULE_9__.clearAll)([$world, $feedback]);
-        (0,_presenters__WEBPACK_IMPORTED_MODULE_9__.presentStats)($stats, app.world);
-        (0,_presenters__WEBPACK_IMPORTED_MODULE_9__.presentChallenge)($challenge, _challenges__WEBPACK_IMPORTED_MODULE_8__.challenges[challengeIndex], app, app.world, app.worldController, challengeIndex + 1, challengeTempl);
-        (0,_presenters__WEBPACK_IMPORTED_MODULE_9__.presentWorld)($world, app.world, floorTempl, elevatorTempl, elevatorButtonTempl, userTempl);
-
-        app.worldController.on("timescale_changed", function() {
-            localStorage.setItem(tsKey, app.worldController.timeScale);
-            (0,_presenters__WEBPACK_IMPORTED_MODULE_9__.presentChallenge)($challenge, _challenges__WEBPACK_IMPORTED_MODULE_8__.challenges[challengeIndex], app, app.world, app.worldController, challengeIndex + 1, challengeTempl);
+        (0, presenters_1.clearAll)([$world, $feedback]);
+        (0, presenters_1.presentStats)($stats, app.world);
+        (0, presenters_1.presentChallenge)($challenge, challenges_1.challenges[challengeIndex], app, app.world, app.worldController, challengeIndex + 1, challengeTempl);
+        (0, presenters_1.presentWorld)($world, app.world, floorTempl, elevatorTempl, elevatorButtonTempl, userTempl);
+        app.worldController.on("timescale_changed", function () {
+            localStorage.setItem(tsKey, "" + app.worldController.timeScale);
+            (0, presenters_1.presentChallenge)($challenge, challenges_1.challenges[challengeIndex], app, app.world, app.worldController, challengeIndex + 1, challengeTempl);
         });
-
-        app.world.on("stats_changed", function() {
-            var challengeStatus = _challenges__WEBPACK_IMPORTED_MODULE_8__.challenges[challengeIndex].condition.evaluate(app.world);
-            if(challengeStatus !== null) {
+        app.world.on("stats_changed", function () {
+            var challengeStatus = challenges_1.challenges[challengeIndex].condition.evaluate(app.world);
+            if (challengeStatus !== null) {
                 app.world.challengeEnded = true;
                 app.worldController.setPaused(true);
-                if(challengeStatus) {
-                    (0,_presenters__WEBPACK_IMPORTED_MODULE_9__.presentFeedback)($feedback, feedbackTempl, app.world, "成功です!", "目標を達成しました", createParamsUrl(params, { challenge: (challengeIndex + 2)}));
-                } else {
-                    (0,_presenters__WEBPACK_IMPORTED_MODULE_9__.presentFeedback)($feedback, feedbackTempl, app.world, "目標失敗", "プログラムを改良する必要があるかも？", "");
+                if (challengeStatus) {
+                    (0, presenters_1.presentFeedback)($feedback, feedbackTempl, app.world, "成功です!", "目標を達成しました", createParamsUrl(params, { challenge: "" + (challengeIndex + 2) }));
+                }
+                else {
+                    (0, presenters_1.presentFeedback)($feedback, feedbackTempl, app.world, "目標失敗", "プログラムを改良する必要があるかも？", "");
                 }
             }
         });
-
         var codeObj = editor.getCodeObj();
         console.log("Starting...");
         app.worldController.start(app.world, codeObj, window.requestAnimationFrame, autoStart);
     };
-
-    editor.on("apply_code", function() {
+    editor.on("apply_code", function () {
         app.startChallenge(app.currentChallengeIndex, true);
     });
-    editor.on("code_success", function() {
-        (0,_presenters__WEBPACK_IMPORTED_MODULE_9__.presentCodeStatus)($codestatus, codeStatusTempl);
+    editor.on("code_success", function () {
+        (0, presenters_1.presentCodeStatus)($codestatus, codeStatusTempl);
     });
-    editor.on("usercode_error", function(error) {
-        (0,_presenters__WEBPACK_IMPORTED_MODULE_9__.presentCodeStatus)($codestatus, codeStatusTempl, error);
+    editor.on("usercode_error", function (error) {
+        (0, presenters_1.presentCodeStatus)($codestatus, codeStatusTempl, error);
     });
-    editor.on("change", function() {
-        jquery__WEBPACK_IMPORTED_MODULE_0___default()("#fitness_message").addClass("faded");
+    editor.on("change", function () {
+        $("#fitness_message").addClass("faded");
         var codeStr = editor.getCode();
         // fitnessSuite(codeStr, true, function(results) {
         //     var message = "";
@@ -41152,36 +41031,47 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()(function() {
         // });
     });
     editor.trigger("change");
-
-    riot.route(function(path) {
-        params = lodash__WEBPACK_IMPORTED_MODULE_5___default().reduce(path.split(","), function(result, p) {
+    riot_1.riot.route(function (path) {
+        params = _.reduce(path.split(","), function (result, p) {
             var match = p.match(/(\w+)=(\w+$)/);
-            if(match) { result[match[1]] = match[2]; } return result;
+            if (match) {
+                result[match[1]] = match[2];
+            }
+            return result;
         }, {});
         var requestedChallenge = 0;
         var autoStart = false;
-        var timeScale = parseFloat(localStorage.getItem(tsKey)) || 2.0;
-        lodash__WEBPACK_IMPORTED_MODULE_5___default().each(params, function(val, key) {
-            if(key === "challenge") {
-                requestedChallenge = lodash__WEBPACK_IMPORTED_MODULE_5___default().parseInt(val) - 1;
-                if(requestedChallenge < 0 || requestedChallenge >= _challenges__WEBPACK_IMPORTED_MODULE_8__.challenges.length) {
+        var tsVal = localStorage.getItem(tsKey);
+        var timeScale = tsVal ? parseFloat(tsVal) : 2.0;
+        _.each(params, function (val, key) {
+            if (key === "challenge") {
+                requestedChallenge = _.parseInt(val) - 1;
+                if (requestedChallenge < 0 || requestedChallenge >= challenges_1.challenges.length) {
                     console.log("Invalid challenge index", requestedChallenge);
                     console.log("Defaulting to first challenge");
                     requestedChallenge = 0;
                 }
-            } else if(key === "autostart") {
+            }
+            else if (key === "autostart") {
                 autoStart = val === "false" ? false : true;
-            } else if(key === "timescale") {
+            }
+            else if (key === "timescale") {
                 timeScale = parseFloat(val);
-            } else if(key === "devtest") {
+            }
+            else if (key === "devtest") {
                 editor.setDevTestCode();
-            } else if(key === "fullscreen") {
-                makeDemoFullscreen();
+            }
+            else if (key === "fullscreen") {
+                (0, presenters_1.makeDemoFullscreen)();
             }
         });
         app.worldController.setTimeScale(timeScale);
         app.startChallenge(requestedChallenge, autoStart);
     });
+    console.log(location.hash);
+    if (location.hash.length === 0) {
+        location.hash = "#challenge=1";
+    }
 });
 
 })();

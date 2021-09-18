@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "outDir": "./public/",
+    "allowJs": true,
+    "moduleResolution": "node",
+    "strict": true,
+    "noImplicitReturns": true,
+    "target": "ES5"
+  },
+  "include": [ "src/ts/**/*" ],
+  "exclude": [ "node_modules" ]
+}
