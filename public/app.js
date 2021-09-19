@@ -39614,7 +39614,8 @@ var asFloor = function (obj, floorLevel, yPosition, errorHandler) {
             floor.trigger.apply(floor, __spreadArray([event], args, false));
         }
         catch (e) {
-            errorHandler(e);
+            if (e instanceof Error)
+                errorHandler(e);
         }
     };
     floor.pressUpButton = function () {
@@ -39693,7 +39694,8 @@ var asElevatorInterface = function (obj, elevator, floorCount, errorHandler) {
             elevatorInterface.trigger.apply(elevatorInterface, __spreadArray([event], args, false));
         }
         catch (e) {
-            errorHandler(e);
+            if (e instanceof Error)
+                errorHandler(e);
         }
     };
     elevatorInterface.checkDestinationQueue = function () {
@@ -39866,7 +39868,7 @@ exports.riot.render = function (tmpl, data, escape_fn) {
         return;
     var currentHash, pops = exports.riot.observable({}), listen = window.addEventListener, doc = document;
     var pop = function (hash) {
-        hash = hash.type ? location.hash : hash;
+        hash = (hash instanceof Event) ? location.hash : hash;
         if (hash !== currentHash)
             pops.trigger("pop", hash);
         currentHash = hash;
@@ -40241,25 +40243,23 @@ var updateUserState = function ($user, elem_user, user) {
 var presentStats = function ($parent, world) {
     var elem_transportedcounter = $parent.find(".transportedcounter").get(0), elem_elapsedtime = $parent.find(".elapsedtime").get(0), elem_transportedpersec = $parent.find(".transportedpersec").get(0), elem_avgwaittime = $parent.find(".avgwaittime").get(0), elem_maxwaittime = $parent.find(".maxwaittime").get(0), elem_movecount = $parent.find(".movecount").get(0);
     world.on("stats_display_changed", function () {
-        elem_transportedcounter.textContent = "" + world.transportedCounter;
+        elem_transportedcounter.textContent = world.transportedCounter + "\u4EBA";
         elem_elapsedtime.textContent = world.elapsedTime.toFixed(0) + "秒";
-        elem_transportedpersec.textContent = world.transportedPerSec.toPrecision(3);
+        elem_transportedpersec.textContent = world.transportedPerSec.toPrecision(3) + "人/秒";
         elem_avgwaittime.textContent = world.avgWaitTime.toFixed(1) + "秒";
         elem_maxwaittime.textContent = world.maxWaitTime.toFixed(1) + "秒";
-        elem_movecount.textContent = "" + world.moveCount;
+        elem_movecount.textContent = world.moveCount + "\u56DE";
     });
     world.trigger("stats_display_changed");
 };
 exports.presentStats = presentStats;
 var presentChallenge = function ($parent, challenge, app, world, worldController, challengeNum, challengeTempl) {
-    var $challenge = $(riot_1.riot.render(challengeTempl, {
+    $parent.html(riot_1.riot.render(challengeTempl, {
         challenge: challenge,
         num: challengeNum,
         timeScale: worldController.timeScale.toFixed(0) + "x",
         startButtonText: world.challengeEnded ? "<i class='fa fa-repeat'></i> 再開" : (worldController.isPaused ? "スタート" : "一時停止")
     }));
-    // @ts-ignore
-    $parent.html($challenge);
     $parent.find(".startstop").on("click", function () {
         app.startStopOrRestart();
     });
@@ -40355,7 +40355,7 @@ var presentCodeStatus = function ($parent, templ, error) {
     console.log(error);
     var errorDisplay = error ? "block" : "none";
     var successDisplay = error ? "none" : "block";
-    var errorMessage = error;
+    var errorMessage = "";
     if (error && error.stack) {
         errorMessage = error.stack;
         errorMessage = errorMessage.replace(/\n/g, "<br>");
@@ -40408,7 +40408,7 @@ var User = /** @class */ (function (_super) {
         _this.destinationFloor = 0;
         _this.done = false;
         _this.removeMe = false;
-        _this.displayType = "female";
+        _this.displayType = "female" /* female */;
         _this.exitAvailableHandler = function (floorNum, elevator) { };
         _this.weight = weight;
         return _this;
@@ -40523,13 +40523,13 @@ var WorldCreator = /** @class */ (function () {
         var weight = _.random(55, 100);
         var user = new user_1.default(weight);
         if (_.random(40) === 0) {
-            user.displayType = "child";
+            user.displayType = "child" /* child */;
         }
         else if (_.random(1) === 0) {
-            user.displayType = "female";
+            user.displayType = "female" /* female */;
         }
         else {
-            user.displayType = "male";
+            user.displayType = "male" /* male */;
         }
         return user;
     };
@@ -40717,7 +40717,8 @@ var createWorldController = function (dtMax) {
                         world.init();
                     }
                     catch (e) {
-                        controller.handleUserCodeError(e);
+                        if (e instanceof Error)
+                            controller.handleUserCodeError(e);
                     }
                 }
                 var dt = (t - lastT);
@@ -40727,7 +40728,8 @@ var createWorldController = function (dtMax) {
                     codeObj.update(scaledDt, world.elevatorInterfaces, world.floors);
                 }
                 catch (e) {
-                    controller.handleUserCodeError(e);
+                    if (e instanceof Error)
+                        controller.handleUserCodeError(e);
                 }
                 while (scaledDt > 0.0 && !world.challengeEnded) {
                     var thisDt = Math.min(dtMax, scaledDt);
@@ -41031,7 +41033,7 @@ $(function () {
         // });
     });
     editor.trigger("change");
-    riot_1.riot.route(function (path) {
+    var routeHandler = function (path) {
         params = _.reduce(path.split(","), function (result, p) {
             var match = p.match(/(\w+)=(\w+$)/);
             if (match) {
@@ -41067,11 +41069,9 @@ $(function () {
         });
         app.worldController.setTimeScale(timeScale);
         app.startChallenge(requestedChallenge, autoStart);
-    });
-    console.log(location.hash);
-    if (location.hash.length === 0) {
-        location.hash = "#challenge=1";
-    }
+    };
+    riot_1.riot.route(routeHandler);
+    routeHandler(location.hash);
 });
 
 })();

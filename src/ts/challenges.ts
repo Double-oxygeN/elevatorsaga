@@ -2,7 +2,7 @@ import { World } from "./world";
 
 interface ChallengeCondition {
     description: string;
-    evaluate(world: World): boolean | null;
+    evaluate(world: World): boolean | null; // true: succeeded, false: failed, null: continue
 }
 
 const requireUserCountWithinTime = (userCount: number, timeLimit: number): ChallengeCondition => {

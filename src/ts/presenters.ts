@@ -38,25 +38,23 @@ export const presentStats = ($parent: JQuery<HTMLElement>, world: World) => {
         elem_movecount = $parent.find(".movecount").get(0);
 
     world.on("stats_display_changed", () => {
-        elem_transportedcounter.textContent = `${world.transportedCounter}`;
+        elem_transportedcounter.textContent = `${world.transportedCounter}人`;
         elem_elapsedtime.textContent = world.elapsedTime.toFixed(0) + "秒";
-        elem_transportedpersec.textContent = world.transportedPerSec.toPrecision(3);
+        elem_transportedpersec.textContent = world.transportedPerSec.toPrecision(3) + "人/秒";
         elem_avgwaittime.textContent = world.avgWaitTime.toFixed(1) + "秒";
         elem_maxwaittime.textContent = world.maxWaitTime.toFixed(1) + "秒";
-        elem_movecount.textContent = `${world.moveCount}`;
+        elem_movecount.textContent = `${world.moveCount}回`;
     });
     world.trigger("stats_display_changed");
 };
 
 export const presentChallenge = ($parent: JQuery<HTMLElement>, challenge: Challenge, app: App, world: World, worldController: WorldController, challengeNum: number, challengeTempl: string) => {
-    const $challenge = $(riot.render(challengeTempl, {
+    $parent.html(riot.render(challengeTempl, {
         challenge: challenge,
         num: challengeNum,
         timeScale: worldController.timeScale.toFixed(0) + "x",
         startButtonText: world.challengeEnded ? "<i class='fa fa-repeat'></i> 再開" : (worldController.isPaused ? "スタート" : "一時停止")
     }));
-    // @ts-ignore
-    $parent.html($challenge);
 
     $parent.find(".startstop").on("click", () => {
         app.startStopOrRestart();
@@ -157,16 +155,16 @@ export const presentWorld = ($world: JQuery<HTMLElement>, world: World, floorTem
 };
 
 
-export const presentCodeStatus = ($parent: JQuery<HTMLElement>, templ: string, error?: any) => {
+export const presentCodeStatus = ($parent: JQuery<HTMLElement>, templ: string, error?: Error) => {
     console.log(error);
-    var errorDisplay = error ? "block" : "none";
-    var successDisplay = error ? "none" : "block";
-    var errorMessage = error;
+    const errorDisplay = error ? "block" : "none";
+    const successDisplay = error ? "none" : "block";
+    let errorMessage = "";
     if(error && error.stack) {
         errorMessage = error.stack;
         errorMessage = errorMessage.replace(/\n/g, "<br>");
     }
-    var status = riot.render(templ, {errorMessage: errorMessage, errorDisplay: errorDisplay, successDisplay: successDisplay});
+    const status = riot.render(templ, {errorMessage: errorMessage, errorDisplay: errorDisplay, successDisplay: successDisplay});
     $parent.html(status);
 };
 

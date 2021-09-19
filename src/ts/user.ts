@@ -3,6 +3,12 @@ import { linearInterpolate } from './movable';
 import { IFloor } from './floor';
 import Elevator from './elevator';
 
+export const enum UserDisplayType {
+    child = "child",
+    female = "female",
+    male = "male"
+}
+
 export default class User extends Movable {
     weight: number;
     public spawnTimestamp: number = 0.0;
@@ -10,7 +16,7 @@ export default class User extends Movable {
     destinationFloor = 0;
     done = false;
     removeMe = false;
-    public displayType: string = "female";
+    public displayType = UserDisplayType.female;
     exitAvailableHandler = (floorNum: number, elevator: Elevator) => {};
 
     constructor(weight: number) {

@@ -29,7 +29,7 @@ export type ElevatorInterface<T> = Observable<T> & IElevator;
 // Interface that hides actual elevator object behind a more robust facade,
 // while also exposing relevant events, and providing some helper queue
 // functions that allow programming without async logic.
-export const asElevatorInterface = <T>(obj: T, elevator: Elevator, floorCount: number, errorHandler: (e: any) => void): ElevatorInterface<T> => {
+export const asElevatorInterface = <T>(obj: T, elevator: Elevator, floorCount: number, errorHandler: (e: Error) => void): ElevatorInterface<T> => {
     let elevatorInterface = riot.observable(obj) as Observable<T> & IElevator;
 
     elevatorInterface.destinationQueue = [];
@@ -37,7 +37,7 @@ export const asElevatorInterface = <T>(obj: T, elevator: Elevator, floorCount: n
     const tryTrigger = (event: string, ...args: any[]) => {
         try {
             elevatorInterface.trigger(event, ...args);
-        } catch(e) { errorHandler(e); }
+        } catch(e) { if (e instanceof Error) errorHandler(e); }
     };
 
     elevatorInterface.checkDestinationQueue = () => {

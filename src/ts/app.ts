@@ -175,7 +175,7 @@ $(() => {
 
     const app = riot.observable({} as IApp);
     app.worldController = createWorldController(1.0 / 60.0);
-    app.worldController.on("usercode_error", (e: any) => {
+    app.worldController.on("usercode_error", (e: Error) => {
         console.log("World raised code error", e);
         editor.trigger("usercode_error", e);
     });
@@ -236,7 +236,7 @@ $(() => {
     editor.on("code_success", () => {
         presentCodeStatus($codestatus, codeStatusTempl);
     });
-    editor.on("usercode_error", (error: any) => {
+    editor.on("usercode_error", (error: Error) => {
         presentCodeStatus($codestatus, codeStatusTempl, error);
     });
     editor.on("change", () => {
@@ -254,7 +254,7 @@ $(() => {
     });
     editor.trigger("change");
 
-    riot.route!((path: string) => {
+    const routeHandler = (path: string) => {
         params = _.reduce(path.split(","), (result, p) => {
             const match = p.match(/(\w+)=(\w+$)/);
             if(match) { result[match[1]] = match[2]; } return result;
@@ -283,10 +283,8 @@ $(() => {
         });
         app.worldController.setTimeScale(timeScale);
         app.startChallenge(requestedChallenge, autoStart);
-    });
+    };
+    riot.route!(routeHandler);
 
-    console.log(location.hash);
-    if (location.hash.length === 0) {
-        location.hash = "#challenge=1";
-    }
+    routeHandler(location.hash);
 });

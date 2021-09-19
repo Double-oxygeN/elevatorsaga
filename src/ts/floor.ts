@@ -14,7 +14,7 @@ export interface IFloor {
 
 export type Floor<T> = Observable<T> & IFloor;
 
-export const asFloor = <T>(obj: T, floorLevel: number, yPosition: number, errorHandler: (e: any) => void) => {
+export const asFloor = <T>(obj: T, floorLevel: number, yPosition: number, errorHandler: (e: Error) => void) => {
     let floor = riot.observable(obj) as Floor<T>;
 
     floor.level = floorLevel;
@@ -25,7 +25,7 @@ export const asFloor = <T>(obj: T, floorLevel: number, yPosition: number, errorH
     const tryTrigger = (event: string, ...args: any[]) => {
         try {
             floor.trigger(event, ...args);
-        } catch(e) { errorHandler(e); }
+        } catch(e) { if (e instanceof Error) errorHandler(e); }
     };
 
     floor.pressUpButton = () => {

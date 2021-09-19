@@ -108,8 +108,8 @@ riot.render = (tmpl, data, escape_fn) => {
     listen = window.addEventListener,
     doc = document;
 
-  const pop = (hash: any) => {
-    hash = hash.type ? location.hash : hash;
+  const pop = (hash: Event | string) => {
+    hash = (hash instanceof Event) ? location.hash : hash;
     if (hash !== currentHash) pops.trigger("pop", hash);
     currentHash = hash;
   }

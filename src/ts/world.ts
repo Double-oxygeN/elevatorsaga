@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import { asFloor, Floor } from './floor';
 import { asElevatorInterface, ElevatorInterface } from './interfaces';
 import Elevator from './elevator';
-import User from './user';
+import User, { UserDisplayType } from './user';
 import { ChallengeOptions } from './challenges';
 import { CodeObj } from './base';
 
@@ -61,11 +61,11 @@ export class WorldCreator {
         const weight = _.random(55, 100);
         const user = new User(weight);
         if(_.random(40) === 0) {
-            user.displayType = "child";
+            user.displayType = UserDisplayType.child;
         } else if(_.random(1) === 0) {
-            user.displayType = "female";
+            user.displayType = UserDisplayType.female;
         } else {
-            user.displayType = "male";
+            user.displayType = UserDisplayType.male;
         }
         return user;
     }
@@ -98,7 +98,7 @@ export class WorldCreator {
 
         riot.observable(world);
 
-        const handleUserCodeError = (e: any) => {
+        const handleUserCodeError = (e: Error) => {
             world.trigger("usercode_error", e);
         }
 
@@ -254,7 +254,7 @@ interface IWorldController {
     timeScale: number;
     isPaused: boolean;
     start(world: World, codeObj: CodeObj | null, animationFrameRequester: (cb: FrameRequestCallback) => number, autoStart?: boolean): void;
-    handleUserCodeError(e: any): void;
+    handleUserCodeError(e: Error): void;
     setPaused(paused: boolean): void;
     setTimeScale(timeScale: number): void;
 }
@@ -278,7 +278,7 @@ export const createWorldController = (dtMax: number) => {
                     try {
                         codeObj!.init(world.elevatorInterfaces, world.floors);
                         world.init();
-                    } catch(e) { controller.handleUserCodeError(e); }
+                    } catch(e) { if (e instanceof Error) controller.handleUserCodeError(e); }
                 }
 
                 const dt = (t - lastT);
@@ -286,9 +286,9 @@ export const createWorldController = (dtMax: number) => {
                 scaledDt = Math.min(scaledDt, dtMax * 3 * controller.timeScale); // Limit to prevent unhealthy substepping
                 try {
                     codeObj!.update(scaledDt, world.elevatorInterfaces, world.floors);
-                } catch(e) { controller.handleUserCodeError(e); }
+                } catch(e) { if (e instanceof Error) controller.handleUserCodeError(e); }
                 while(scaledDt > 0.0 && !world.challengeEnded) {
-                    var thisDt = Math.min(dtMax, scaledDt);
+                    const thisDt = Math.min(dtMax, scaledDt);
                     world.update(thisDt);
                     scaledDt -= dtMax;
                 }
